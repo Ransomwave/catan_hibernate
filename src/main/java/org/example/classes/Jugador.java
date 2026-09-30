@@ -28,6 +28,13 @@ public class Jugador {
     @Column(nullable = false)
     Integer cavallersJugats;
 
+    public Jugador(@NotBlank String nom, ColorJugador color, Integer orderTorn, Integer cavallersJugats) {
+        this.nom = nom;
+        this.color = color;
+        this.orderTorn = orderTorn;
+        this.cavallersJugats = cavallersJugats;
+    }
+
     public Jugador() {
     }
 

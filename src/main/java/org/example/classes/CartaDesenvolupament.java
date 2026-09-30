@@ -23,6 +23,12 @@ public class CartaDesenvolupament {
     @Column(nullable = false)
     Integer rondaCompra;
 
+    public CartaDesenvolupament(TipusCarta tipus, boolean usada, Integer rondaCompra) {
+        this.tipus = tipus;
+        this.usada = usada;
+        this.rondaCompra = rondaCompra;
+    }
+
     public CartaDesenvolupament() {
     }
 }
