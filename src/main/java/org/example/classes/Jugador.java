@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 
-@Entity
+@Entity(name = "jugador")
 public class Jugador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +27,8 @@ public class Jugador {
 
     @Column(nullable = false)
     Integer cavallersJugats;
+
+    public Jugador() {
+    }
 
 }
