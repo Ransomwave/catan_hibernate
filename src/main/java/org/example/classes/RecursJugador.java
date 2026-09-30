@@ -5,9 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
-@Entity(name = "recurs_jugador")
+@Entity
+@Table(name = "recurs_jugador")
 public class RecursJugador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
