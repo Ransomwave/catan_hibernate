@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-@Entity
+@Entity(name = "recurs_jugador")
 public class RecursJugador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +17,7 @@ public class RecursJugador {
 
     @Column(nullable = false)
     Integer quantitat;
+
+    public RecursJugador() {
+    }
 }
