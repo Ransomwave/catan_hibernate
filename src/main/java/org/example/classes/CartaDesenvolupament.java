@@ -16,13 +16,13 @@ public class CartaDesenvolupament {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = false)
     TipusCarta tipus;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = false)
     boolean usada;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = false)
     Integer rondaCompra;
 
     public CartaDesenvolupament(TipusCarta tipus, boolean usada, Integer rondaCompra) {
