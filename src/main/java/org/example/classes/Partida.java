@@ -20,8 +20,6 @@ import jakarta.validation.constraints.PastOrPresent;
 
 @Entity
 @Table(name = "partida")
-// @DynamicInsert: l'INSERT només inclou les columnes que no són null.
-// Així, si valoracio és null, MySQL hi posa el DEFAULT (5.0).
 @DynamicInsert
 public class Partida {
 
@@ -33,22 +31,24 @@ public class Partida {
 	
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	@Column(name = "estat", nullable = false, length = 10)
+	@Column(name = "estat", nullable = false, length = 15, unique = false)
 	private EstatPartida estat;
 	
 	
-	@Column(name = "data_inici", nullable = false)
+	@Column(name = "data_inici", nullable = false, unique = false)
 	private Date dataInici;
 	
-	
-	@Column(name = "ronda")
+	@Min(value = 0, message = "La nota de Metacritic ha d'estar entre 0 i 100")
+	@Max(value = 100, message = "La nota de Metacritic ha d'estar entre 0 i 100")
+	@Column(name = "ronda" )
 	private Integer  ronda;
 	
 	
-	@Column(name = "ultima_tirada")
+	@Column(name = "ultima_tirada", nullable = true)
 	private Integer  ultimaTirada;
 	
-	
+	@Min(value = 3)
+	@Max(value = 100)
 	@Column(name = "punts_per_guanyar")
 	private Integer  puntsPerGuanyar;
 	
@@ -75,6 +75,20 @@ public class Partida {
 		this.dausTirats = dausTirats;
 		this.lladrePendent = lladrePendent;
 	}
+	public Partida(Integer id, @NotNull EstatPartida estat, Date dataInici, Integer ronda, Integer ultimaTirada) {
+		super();
+		this.id = id;
+		this.estat = estat;
+		this.dataInici = dataInici;
+		this.ronda = ronda;
+		this.ultimaTirada = ultimaTirada;
+		this.puntsPerGuanyar = 10;
+		this.dausTirats = false;
+		this.lladrePendent = false;
+	}
+	
+
+	
 	
 	
 }
