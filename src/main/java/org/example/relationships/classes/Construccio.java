@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,4 +24,7 @@ public abstract class Construccio {
 	@Column(name = "id", length = 20)
 	private Integer id;
 
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "propietari_id", nullable = false)
+	private Jugador propietari;
 }

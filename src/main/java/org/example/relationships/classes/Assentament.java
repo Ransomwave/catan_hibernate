@@ -7,6 +7,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,7 +17,8 @@ import jakarta.persistence.Table;
 @DiscriminatorValue("assentament")
 public abstract class Assentament extends Construccio {
 
-	@Column(name = "vertex", unique = true)
+	@OneToOne(optional = false)
+	@JoinColumn(name = "vertex_id", nullable = false, unique = true)
 	private Vertex vertex;
 
 	public Assentament() {
