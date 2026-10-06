@@ -7,10 +7,16 @@ import org.example.relationships.enums.TipusRecurs;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity()
@@ -21,19 +27,25 @@ public class Jugador {
     Integer id;
 
     @NotBlank
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, unique = false, length = 50)
     String nom;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = false)
     ColorJugador color;
 
+    @Min(1)
+    @Max(4)
     @Column(nullable = false, unique = false)
     Integer orderTorn;
 
+    @Min(0)
+    @Max(14)
     @Column(nullable = false, unique = false)
     Integer cavallersJugats;
 
-    @Column(unique = false)
+    @ManyToOne
+    @JoinColumn(nullable = false, unique = false)
     Set<RecursJugador> inventari;
 
     public Jugador(@NotBlank String nom, ColorJugador color, Integer orderTorn, Integer cavallersJugats) {
