@@ -1,4 +1,4 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

@@ -1,4 +1,4 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
 import org.hibernate.annotations.DynamicInsert;
 
@@ -10,15 +10,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "aresta")
+@Table(name = "vertex")
 @DynamicInsert
-public class Aresta {
-	
+public class Vertex {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	
+
 	@Column(name = "codi")
 	private Integer codi;
 

@@ -1,9 +1,9 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
 import java.util.Set;
 
-import org.example.enums.ColorJugador;
-import org.example.enums.TipusRecurs;
+import org.example.relationships.enums.ColorJugador;
+import org.example.relationships.enums.TipusRecurs;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -11,8 +11,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @DiscriminatorValue("carretera")
-public class Carretera extends Construccio{
-	
+public class Carretera extends Construccio {
+
 	@Column(name = "aresta", unique = true)
 	private Aresta aresta;
 

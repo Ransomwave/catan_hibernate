@@ -1,6 +1,6 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
-import org.example.enums.TipusCarta;
+import org.example.relationships.enums.TipusCarta;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

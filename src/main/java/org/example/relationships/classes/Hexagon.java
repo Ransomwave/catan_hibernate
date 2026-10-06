@@ -1,6 +1,6 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
-import org.example.enums.TipusTerreny;
+import org.example.relationships.enums.TipusTerreny;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
