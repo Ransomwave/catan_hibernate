@@ -1,8 +1,8 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
 import java.util.Date;
 
-import org.example.enums.EstatPartida;
+import org.example.relationships.enums.EstatPartida;
 import org.hibernate.annotations.DynamicInsert;
 
 import jakarta.persistence.Column;
@@ -28,33 +28,31 @@ public class Partida {
 	@Column(name = "id")
 	// Integer i no int: mentre l'objecte no s'ha guardat, id és null (i no 0)
 	private Integer id;
-	
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(name = "estat", nullable = false, length = 15, unique = false)
 	private EstatPartida estat;
-	
-	
+
 	@Column(name = "data_inici", nullable = false, unique = false)
 	private Date dataInici;
-	
+
 	@Min(value = 0, message = "La nota de Metacritic ha d'estar entre 0 i 100")
 	@Max(value = 100, message = "La nota de Metacritic ha d'estar entre 0 i 100")
-	@Column(name = "ronda" )
-	private Integer  ronda;
-	
-	
+	@Column(name = "ronda")
+	private Integer ronda;
+
 	@Column(name = "ultima_tirada", nullable = true)
-	private Integer  ultimaTirada;
-	
+	private Integer ultimaTirada;
+
 	@Min(value = 3)
 	@Max(value = 100)
 	@Column(name = "punts_per_guanyar")
-	private Integer  puntsPerGuanyar;
-	
+	private Integer puntsPerGuanyar;
+
 	@Column(name = "daus_tirats", nullable = false)
 	private boolean dausTirats;
-	
+
 	@Column(name = "lladre_pendent", nullable = false)
 	private boolean lladrePendent;
 
@@ -75,6 +73,7 @@ public class Partida {
 		this.dausTirats = dausTirats;
 		this.lladrePendent = lladrePendent;
 	}
+
 	public Partida(Integer id, @NotNull EstatPartida estat, Date dataInici, Integer ronda, Integer ultimaTirada) {
 		super();
 		this.id = id;
@@ -86,10 +85,5 @@ public class Partida {
 		this.dausTirats = false;
 		this.lladrePendent = false;
 	}
-	
 
-	
-	
-	
 }
-

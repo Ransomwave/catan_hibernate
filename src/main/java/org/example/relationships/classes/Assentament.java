@@ -1,25 +1,30 @@
-package org.example.classes;
+package org.example.relationships.classes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "assentament")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipus", discriminatorType = DiscriminatorType.STRING, length = 10)
-public abstract class Construccio {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", length=20)
-	private Integer id;
-	
+@DiscriminatorValue("assentament")
+public abstract class Assentament extends Construccio {
+
+	@Column(name = "vertex", unique = true)
+	private Vertex vertex;
+
+	public Assentament() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Assentament(Vertex vertex) {
+		this.vertex = vertex;
+	}
+
 }
