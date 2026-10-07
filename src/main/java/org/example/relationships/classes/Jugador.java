@@ -1,5 +1,6 @@
 package org.example.relationships.classes;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,7 +42,7 @@ public class Jugador {
     @Min(1)
     @Max(4)
     @Column(nullable = false, unique = false)
-    Integer orderTorn;
+    Integer ordreTorn;
 
     @Min(0)
     @Max(14)
@@ -56,13 +57,14 @@ public class Jugador {
     Partida partida;
 
     @OneToMany(mappedBy = "propietari")
-    List<CartaDesenvolupament> ma;
+    List<CartaDesenvolupament> ma = new ArrayList<>();
 
-    public Jugador(@NotBlank String nom, ColorJugador color, Integer orderTorn, Integer cavallersJugats) {
+    public Jugador(@NotBlank String nom, ColorJugador color, Integer ordreTorn, Integer cavallersJugats, Partida partida) {
         this.nom = nom;
         this.color = color;
-        this.orderTorn = orderTorn;
+        this.ordreTorn = ordreTorn;
         this.cavallersJugats = cavallersJugats;
+        this.partida = partida;
 
         // initialize the inventory with all resource types and a quantity of 0
         for (var tipus : TipusRecurs.values()) {
