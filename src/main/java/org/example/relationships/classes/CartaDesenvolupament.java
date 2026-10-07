@@ -28,7 +28,7 @@ public class CartaDesenvolupament {
 
     @NotNull
     @Column(nullable = false, unique = false)
-    boolean usada;
+    Boolean usada;
 
     @Min(1)
     @Column(nullable = true, unique = false)
