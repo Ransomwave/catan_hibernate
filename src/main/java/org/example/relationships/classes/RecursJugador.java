@@ -33,9 +33,10 @@ public class RecursJugador {
     @JoinColumn(nullable = false, unique = false)
     Jugador jugador;
 
-    public RecursJugador(Integer quantitat, TipusRecurs tipus) {
+    public RecursJugador(@Min(0) Integer quantitat, TipusRecurs tipus, Jugador jugador) {
         this.quantitat = quantitat;
         this.tipus = tipus;
+        this.jugador = jugador;
     }
 
     public RecursJugador() {
