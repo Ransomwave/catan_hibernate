@@ -1,25 +1,28 @@
 package org.example.relationships.classes;
 
-import org.hibernate.annotations.DynamicInsert;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "vertex")
-@DynamicInsert
+@Table(name = "vertex",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"partida_id", "codi"}))
 public class Vertex {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@Column(name = "codi")
-	private Integer codi;
+    @NotNull
+    @Min(0)
+    @Max(53)
+    @Column(nullable = false)
+    private Integer codi;
 
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "partida_id", nullable = false)
+    private Partida partida;
+    
+    
 }
