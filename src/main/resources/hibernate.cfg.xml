@@ -8,7 +8,7 @@
         <!-- Database Connection Settings -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <!-- Això ho heu de canviar per les vostres dades -->
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/videojocs?createDatabaseIfNotExist=true</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/catan?createDatabaseIfNotExist=true</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">super3</property>
 
@@ -29,9 +29,19 @@
         -->
 
 
-        <!-- AQUÍ POSEU LES CLASSES QUE REPRESENTEN TAULES QUE FEU SERVIR -->
-        <!-- Els enums (Pegi, Genere) NO van aquí: no són entitats -->
-<!--        <mapping class="introHibernate.Videojoc"/>-->
+        <mapping class="org.example.relationships.classes.Partida"/>
+        <mapping class="org.example.relationships.classes.Jugador"/>
+        <mapping class="org.example.relationships.classes.RecursJugador"/>
+        <mapping class="org.example.relationships.classes.CartaDesenvolupament"/>
+        <mapping class="org.example.relationships.classes.Hexagon"/>
+        <mapping class="org.example.relationships.classes.Vertex"/>
+        <mapping class="org.example.relationships.classes.HexagonVertex"/>
+        <mapping class="org.example.relationships.classes.Aresta"/>
+        <mapping class="org.example.relationships.classes.Construccio"/>
+        <mapping class="org.example.relationships.classes.Assentament"/>
+        <mapping class="org.example.relationships.classes.Poblat"/>
+        <mapping class="org.example.relationships.classes.Ciutat"/>
+        <mapping class="org.example.relationships.classes.Carretera"/>
 
     </session-factory>
 </hibernate-configuration>
