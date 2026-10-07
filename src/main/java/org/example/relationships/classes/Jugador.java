@@ -50,6 +50,10 @@ public class Jugador {
     @OneToMany(mappedBy = "jugador", cascade = CascadeType.ALL)
     Set<RecursJugador> inventari = new HashSet<>();
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "partida_id", nullable = false)
+    Partida partida;
+
     public Jugador(@NotBlank String nom, ColorJugador color, Integer orderTorn, Integer cavallersJugats) {
         this.nom = nom;
         this.color = color;
