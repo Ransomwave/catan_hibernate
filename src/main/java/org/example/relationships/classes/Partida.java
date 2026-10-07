@@ -36,7 +36,7 @@ public class Partida {
 	@Min(1)
 	@Column(name = "ronda", nullable = false, unique = false)
 	private Integer ronda;
-	
+
 	@Min(2)
 	@Max(12)
 	@Column(name = "ultima_tirada", nullable = true, unique = false)
@@ -44,93 +44,53 @@ public class Partida {
 
 	@Min(3)
 	@Max(20)
-	@Column(name = "punts_per_guanyar", nullable = true, unique = false)
+	@Column(name = "punts_per_guanyar", nullable = false, unique = false)
 	private Integer puntsPerGuanyar;
-	
-	@NotNull
-	@Column(name = "daus_tirats", nullable = true, unique = false)
+
+	@Column(name = "daus_tirats", nullable = false, unique = false)
 	private boolean dausTirats;
-	
-	@NotNull
-	@Column(name = "lladre_pendent", nullable = true, unique = false)
+
+	@Column(name = "lladre_pendent", nullable = false, unique = false)
 	private boolean lladrePendent;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lladre_hexagon_id")
-    private Hexagon lladre;
-	
+	@JoinColumn(name = "lladre_hexagon_id")
+	private Hexagon lladre;
+
 	@ManyToOne()
-	@JoinColumn(name = "actiu_jugador_id", nullable=true)
+	@JoinColumn(name = "actiu_jugador_id", nullable = true)
 	private Jugador actiu;
-	
+
 	@ManyToOne()
-	@JoinColumn(name = "guanyador_jugador_id", nullable=true)
+	@JoinColumn(name = "guanyador_jugador_id", nullable = true)
 	private Jugador guanyador;
-	
+
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
-    private List<Hexagon> tauler = new ArrayList<>();
-	
+	private List<Hexagon> tauler = new ArrayList<>();
+
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
-    private List<Jugador> jugadors = new ArrayList<>(); //TODO: Mirar si es set
-	
-	@OneToMany(mappedBy = "arestes", cascade = CascadeType.ALL)
-    private List<Jugador> arestes = new ArrayList<>(); //TODO: Mirar si es set
-	
-	@OneToMany(mappedBy = "pila", cascade = CascadeType.ALL)
-    private List<Jugador> pila = new ArrayList<>(); //TODO: Mirar si es set
-	
+	private List<Jugador> jugadors = new ArrayList<>();
+
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
+	private List<Aresta> arestes = new ArrayList<>();
+
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
+	private List<CartaDesenvolupament> pila = new ArrayList<>();
 
 	public Partida() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	
-
-	public Partida(Integer id, @NotNull EstatPartida estat, Date dataInici, @Min(1) Integer ronda,
-			@Min(2) @Max(12) Integer ultimaTirada, @Min(3) @Max(20) Integer puntsPerGuanyar,
-			@NotNull boolean dausTirats, @NotNull boolean lladrePendent, Hexagon lladre, Jugador actiu,
-			Jugador guanyador, List<Hexagon> tauler, List<Jugador> jugadors, List<Jugador> arestes,
-			List<Jugador> pila) {
-		super();
-		this.id = id;
+	public Partida(EstatPartida estat, Date dataInici, Integer ronda, Integer puntsPerGuanyar) {
 		this.estat = estat;
 		this.dataInici = dataInici;
 		this.ronda = ronda;
-		this.ultimaTirada = ultimaTirada;
 		this.puntsPerGuanyar = puntsPerGuanyar;
-		this.dausTirats = dausTirats;
-		this.lladrePendent = lladrePendent;
-		this.lladre = lladre;
-		this.actiu = actiu;
-		this.guanyador = guanyador;
-		this.tauler = tauler;
-		this.jugadors = jugadors;
-		this.arestes = arestes;
-		this.pila = pila;
-	}
-
-
-
-	public Partida(Integer id, @NotNull EstatPartida estat, Date dataInici, Integer ronda, Integer ultimaTirada, Hexagon lladre, Jugador actiu,
-			Jugador guanyador, List<Hexagon> tauler, List<Jugador> jugadors, List<Jugador> arestes,
-			List<Jugador> pila) {
-		super();
-		this.id = id;
-		this.estat = estat;
-		this.dataInici = dataInici;
-		this.ronda = ronda;
-		this.ultimaTirada = ultimaTirada;
-		this.puntsPerGuanyar = 10;
 		this.dausTirats = false;
 		this.lladrePendent = false;
-		this.lladre = lladre;
-		this.actiu = actiu;
-		this.guanyador = guanyador;
-		this.tauler = tauler;
-		this.jugadors = jugadors;
-		this.arestes = arestes;
-		this.pila = pila;
+	}
+
+	public Partida(EstatPartida estat, Date dataInici, Integer ronda) {
+		this(estat, dataInici, ronda, 10);
 	}
 
 }
