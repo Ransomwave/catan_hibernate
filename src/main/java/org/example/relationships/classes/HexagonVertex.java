@@ -3,6 +3,7 @@ package org.example.relationships.classes;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+
 @Entity
 @Table(name = "hexagonvertex")
 public class HexagonVertex {
@@ -11,20 +12,20 @@ public class HexagonVertex {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "hexagon_id", nullable = false)
-    @NotNull
     private Hexagon hexagon;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "vertex_id", nullable = false)
-    @NotNull
     private Vertex vertex;
 
-    @Column(nullable = false)
     @NotNull
     @Min(0)
     @Max(5)
+    @Column(nullable = false)
     private Integer posicio;
 
     public HexagonVertex() {
