@@ -27,7 +27,7 @@ public class RecursJugador {
     Integer quantitat;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     TipusRecurs tipus;
 
     @ManyToOne
