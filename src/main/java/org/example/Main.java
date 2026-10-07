@@ -1,11 +1,11 @@
 package org.example;
 
+import org.hibernate.cfg.Configuration;
+
 public class Main {
     static void main() {
-        IO.println(String.format("Hello and welcome!"));
-
-        for (int i = 1; i <= 5; i++) {
-            IO.println("i = " + i);
+        try (var sessionFactory = new Configuration().configure().buildSessionFactory()) {
+            IO.println("Base de dades creada");
         }
     }
 }
