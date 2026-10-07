@@ -1,6 +1,7 @@
 package org.example.relationships.classes;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.example.relationships.enums.ColorJugador;
@@ -53,6 +54,9 @@ public class Jugador {
     @ManyToOne(optional = false)
     @JoinColumn(name = "partida_id", nullable = false)
     Partida partida;
+
+    @OneToMany(mappedBy = "propietari")
+    List<CartaDesenvolupament> ma;
 
     public Jugador(@NotBlank String nom, ColorJugador color, Integer orderTorn, Integer cavallersJugats) {
         this.nom = nom;
