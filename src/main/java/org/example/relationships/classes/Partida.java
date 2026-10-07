@@ -70,7 +70,7 @@ public class Partida {
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
     private List<Hexagon> tauler = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "jugadors", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
     private List<Jugador> jugadors = new ArrayList<>(); //TODO: Mirar si es set
 	
 	@OneToMany(mappedBy = "arestes", cascade = CascadeType.ALL)
