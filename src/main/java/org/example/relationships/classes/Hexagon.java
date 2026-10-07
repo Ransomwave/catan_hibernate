@@ -15,7 +15,7 @@ public class Hexagon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @NotNull
     @Column(nullable = false)
@@ -47,8 +47,8 @@ public class Hexagon {
     @JoinColumn(nullable = false)
     private Partida partida;
 
-    @OneToMany(mappedBy = "vertexs", cascade = CascadeType.ALL)
-    private List<HexagonVertex> vertexs = new ArrayList<>(); // TODO: no tengo ni idea socio
+    @OneToMany(mappedBy = "hexagon", cascade = CascadeType.ALL)
+    private List<HexagonVertex> vertexs = new ArrayList<>();
 
     public Hexagon() {
     }
