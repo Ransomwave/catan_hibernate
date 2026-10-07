@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "assentament")
+@Table(name = "construccions")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipus", discriminatorType = DiscriminatorType.STRING, length = 10)
 public abstract class Construccio {
