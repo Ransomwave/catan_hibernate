@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 public abstract class Construccio {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", length = 20)
+	@Column(name = "id")
 	private Integer id;
 
 	@ManyToOne(optional = false)
