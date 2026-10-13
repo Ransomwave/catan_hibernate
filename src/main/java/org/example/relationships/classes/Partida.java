@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.example.relationships.enums.EstatPartida;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.ManyToAny;
 
@@ -30,7 +31,8 @@ public class Partida {
 	@Column(name = "estat", nullable = false, length = 15, unique = false)
 	private EstatPartida estat;
 
-	@Column(name = "data_inici", nullable = false, unique = false)
+	@CreationTimestamp
+	@Column(name = "data_inici", nullable = false, unique = false, updatable = false)
 	private Date dataInici;
 
 	@Min(1)
@@ -77,20 +79,16 @@ public class Partida {
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
 	private List<CartaDesenvolupament> pila = new ArrayList<>();
 
-	public Partida() {
-	}
+	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
+	private List<Vertex> vertices = new ArrayList<>();
 
-	public Partida(EstatPartida estat, Date dataInici, Integer ronda, Integer puntsPerGuanyar) {
+	public Partida(EstatPartida estat, Integer ronda, Integer puntsPerGuanyar) {
 		this.estat = estat;
-		this.dataInici = dataInici;
 		this.ronda = ronda;
 		this.puntsPerGuanyar = puntsPerGuanyar;
-		this.dausTirats = false;
-		this.lladrePendent = false;
 	}
 
-	public Partida(EstatPartida estat, Date dataInici, Integer ronda) {
-		this(estat, dataInici, ronda, 10);
+	public Partida() {
 	}
 
 }
