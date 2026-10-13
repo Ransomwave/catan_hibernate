@@ -3,10 +3,8 @@ package org.example.relationships.classes;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-
 @Entity
-@Table(name = "vertex",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"partida_id", "codi"}))
+@Table(name = "vertex", uniqueConstraints = @UniqueConstraint(columnNames = { "partida_id", "codi" }))
 public class Vertex {
 
     @Id
@@ -23,6 +21,10 @@ public class Vertex {
     @ManyToOne
     @JoinColumn(name = "partida_id", nullable = false)
     private Partida partida;
-    
-    
+
+    public Vertex(@NotNull @Min(0) @Max(53) Integer codi, @NotNull Partida partida) {
+        this.codi = codi;
+        this.partida = partida;
+    }
+
 }
