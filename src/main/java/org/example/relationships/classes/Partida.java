@@ -91,4 +91,12 @@ public class Partida {
 	public Partida() {
 	}
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setLladre(Hexagon lladre) {
+		this.lladre = lladre;
+	}
+
 }

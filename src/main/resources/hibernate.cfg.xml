@@ -1,14 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE hibernate-configuration PUBLIC
-        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-        "https://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "https://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
 
         <!-- Database Connection Settings -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <!-- Això ho heu de canviar per les vostres dades -->
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/catan?createDatabaseIfNotExist=true</property>
+        <property name="hibernate.connection.url">
+            jdbc:mysql://localhost:3306/catan?createDatabaseIfNotExist=true</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">super3</property>
 
@@ -16,6 +15,11 @@
              Mentre fem proves, "create" esborra i torna a crear les taules a cada execució:
              així el programa es pot executar tantes vegades com vulguem sense errors de clau duplicada.
              Quan el model sigui estable (i a la pràctica), "update". -->
+
+        <!-- To use sessionFactory.getCurrentSession() in the DAOs -->
+        <!-- thread = only one session per thread -->
+        <property name="hibernate.current_session_context_class">thread</property>
+
         <property name="hibernate.hbm2ddl.auto">create</property>
 
         <!-- Això ens permet xafardejar l'SQL que genera Hibernate. Opcional -->
@@ -29,20 +33,19 @@
         -->
 
 
-        <mapping class="org.example.relationships.classes.Partida"/>
-        <mapping class="org.example.relationships.classes.Jugador"/>
-        <mapping class="org.example.relationships.classes.RecursJugador"/>
-        <mapping class="org.example.relationships.classes.CartaDesenvolupament"/>
-        <mapping class="org.example.relationships.classes.Hexagon"/>
-        <mapping class="org.example.relationships.classes.Vertex"/>
-        <mapping class="org.example.relationships.classes.HexagonVertex"/>
-        <mapping class="org.example.relationships.classes.Aresta"/>
-        <mapping class="org.example.relationships.classes.Construccio"/>
-        <mapping class="org.example.relationships.classes.Assentament"/>
-        <mapping class="org.example.relationships.classes.Poblat"/>
-        <mapping class="org.example.relationships.classes.Ciutat"/>
-        <mapping class="org.example.relationships.classes.Carretera"/>
+        <mapping class="org.example.relationships.classes.Partida" />
+        <mapping class="org.example.relationships.classes.Jugador" />
+        <mapping class="org.example.relationships.classes.RecursJugador" />
+        <mapping class="org.example.relationships.classes.CartaDesenvolupament" />
+        <mapping class="org.example.relationships.classes.Hexagon" />
+        <mapping class="org.example.relationships.classes.Vertex" />
+        <mapping class="org.example.relationships.classes.HexagonVertex" />
+        <mapping class="org.example.relationships.classes.Aresta" />
+        <mapping class="org.example.relationships.classes.Construccio" />
+        <mapping class="org.example.relationships.classes.Assentament" />
+        <mapping class="org.example.relationships.classes.Poblat" />
+        <mapping class="org.example.relationships.classes.Ciutat" />
+        <mapping class="org.example.relationships.classes.Carretera" />
 
     </session-factory>
 </hibernate-configuration>
-
