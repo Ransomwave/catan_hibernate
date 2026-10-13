@@ -12,8 +12,8 @@ public class Vertex {
     private Integer id;
 
     @NotNull
-    @Min(0)
-    @Max(53)
+    @Min(1)
+    @Max(54)
     @Column(nullable = false)
     private Integer codi;
 
@@ -22,7 +22,10 @@ public class Vertex {
     @JoinColumn(name = "partida_id", nullable = false)
     private Partida partida;
 
-    public Vertex(@NotNull @Min(0) @Max(53) Integer codi, @NotNull Partida partida) {
+    public Vertex() {
+    }
+
+    public Vertex(Integer codi, Partida partida) {
         this.codi = codi;
         this.partida = partida;
     }
