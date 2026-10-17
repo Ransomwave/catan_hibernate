@@ -13,4 +13,12 @@ public class Carretera extends Construccio {
 	@JoinColumn(name = "aresta_id", nullable = false, unique = true)
 	private Aresta aresta;
 
+	public Aresta getAresta() {
+		return aresta;
+	}
+
+	public void setAresta(Aresta aresta) {
+		this.aresta = aresta;
+	}
+
 }

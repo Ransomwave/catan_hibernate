@@ -30,4 +30,23 @@ public class Vertex {
         this.partida = partida;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public Integer getCodi() {
+        return codi;
+    }
+
+    public void setCodi(Integer codi) {
+        this.codi = codi;
+    }
+
+    public Partida getPartida() {
+        return partida;
+    }
+
+    public void setPartida(Partida partida) {
+        this.partida = partida;
+    }
 }

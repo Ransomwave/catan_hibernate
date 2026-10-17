@@ -50,4 +50,48 @@ public class CartaDesenvolupament {
 
     public CartaDesenvolupament() {
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public TipusCarta getTipus() {
+        return tipus;
+    }
+
+    public void setTipus(TipusCarta tipus) {
+        this.tipus = tipus;
+    }
+
+    public Boolean getUsada() {
+        return usada;
+    }
+
+    public void setUsada(Boolean usada) {
+        this.usada = usada;
+    }
+
+    public Integer getRondaCompra() {
+        return rondaCompra;
+    }
+
+    public void setRondaCompra(Integer rondaCompra) {
+        this.rondaCompra = rondaCompra;
+    }
+
+    public Partida getPartida() {
+        return partida;
+    }
+
+    public void setPartida(Partida partida) {
+        this.partida = partida;
+    }
+
+    public Jugador getPropietari() {
+        return propietari;
+    }
+
+    public void setPropietari(Jugador propietari) {
+        this.propietari = propietari;
+    }
 }

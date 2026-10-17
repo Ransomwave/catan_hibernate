@@ -43,11 +43,31 @@ public class RecursJugador {
     public RecursJugador() {
     }
 
+	public Integer getId() {
+		return id;
+	}
+
 	public Integer getQuantitat() {
 		return quantitat;
 	}
 
+	public void setQuantitat(Integer quantitat) {
+		this.quantitat = quantitat;
+	}
+
 	public TipusRecurs getTipus() {
 		return tipus;
+	}
+
+	public void setTipus(TipusRecurs tipus) {
+		this.tipus = tipus;
+	}
+
+	public Jugador getJugador() {
+		return jugador;
+	}
+
+	public void setJugador(Jugador jugador) {
+		this.jugador = jugador;
 	}
 }

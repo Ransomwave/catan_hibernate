@@ -75,17 +75,63 @@ public class Jugador {
     public Jugador() {
     }
 
+	public Integer getId() {
+		return id;
+	}
+
 	public String getNom() {
 		return nom;
 	}
 
-	public Set<RecursJugador> getInventari() {
-		return inventari;
+	public void setNom(String nom) {
+		this.nom = nom;
 	}
 
 	public ColorJugador getColor() {
 		return color;
 	}
 
-	
+	public void setColor(ColorJugador color) {
+		this.color = color;
+	}
+
+	public Integer getOrdreTorn() {
+		return ordreTorn;
+	}
+
+	public void setOrdreTorn(Integer ordreTorn) {
+		this.ordreTorn = ordreTorn;
+	}
+
+	public Integer getCavallersJugats() {
+		return cavallersJugats;
+	}
+
+	public void setCavallersJugats(Integer cavallersJugats) {
+		this.cavallersJugats = cavallersJugats;
+	}
+
+	public Set<RecursJugador> getInventari() {
+		return inventari;
+	}
+
+	public void setInventari(Set<RecursJugador> inventari) {
+		this.inventari = inventari;
+	}
+
+	public Partida getPartida() {
+		return partida;
+	}
+
+	public void setPartida(Partida partida) {
+		this.partida = partida;
+	}
+
+	public List<CartaDesenvolupament> getMa() {
+		return ma;
+	}
+
+	public void setMa(List<CartaDesenvolupament> ma) {
+		this.ma = ma;
+	}
 }

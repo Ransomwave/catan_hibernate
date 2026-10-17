@@ -3,7 +3,6 @@ package org.example.relationships.classes;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-
 @Entity
 @Table(name = "hexagonvertex")
 public class HexagonVertex {
@@ -34,6 +33,34 @@ public class HexagonVertex {
     public HexagonVertex(Hexagon hexagon, Vertex vertex, Integer posicio) {
         this.hexagon = hexagon;
         this.vertex = vertex;
+        this.posicio = posicio;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public Hexagon getHexagon() {
+        return hexagon;
+    }
+
+    public void setHexagon(Hexagon hexagon) {
+        this.hexagon = hexagon;
+    }
+
+    public Vertex getVertex() {
+        return vertex;
+    }
+
+    public void setVertex(Vertex vertex) {
+        this.vertex = vertex;
+    }
+
+    public Integer getPosicio() {
+        return posicio;
+    }
+
+    public void setPosicio(Integer posicio) {
         this.posicio = posicio;
     }
 }

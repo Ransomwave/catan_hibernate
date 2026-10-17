@@ -46,4 +46,40 @@ public class Aresta {
 		this.vertexB = vertexB;
 	}
 
+	public Integer getId() {
+		return id;
+	}
+
+	public Integer getCodi() {
+		return codi;
+	}
+
+	public void setCodi(Integer codi) {
+		this.codi = codi;
+	}
+
+	public Partida getPartida() {
+		return partida;
+	}
+
+	public void setPartida(Partida partida) {
+		this.partida = partida;
+	}
+
+	public Vertex getVertexA() {
+		return vertexA;
+	}
+
+	public void setVertexA(Vertex vertexA) {
+		this.vertexA = vertexA;
+	}
+
+	public Vertex getVertexB() {
+		return vertexB;
+	}
+
+	public void setVertexB(Vertex vertexB) {
+		this.vertexB = vertexB;
+	}
+
 }

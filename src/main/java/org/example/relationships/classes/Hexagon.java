@@ -62,4 +62,64 @@ public class Hexagon {
         this.partida = partida;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public Integer getCodi() {
+        return codi;
+    }
+
+    public void setCodi(Integer codi) {
+        this.codi = codi;
+    }
+
+    public TipusTerreny getTerreny() {
+        return terreny;
+    }
+
+    public void setTerreny(TipusTerreny terreny) {
+        this.terreny = terreny;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
+
+    public int getQ() {
+        return q;
+    }
+
+    public void setQ(int q) {
+        this.q = q;
+    }
+
+    public int getR() {
+        return r;
+    }
+
+    public void setR(int r) {
+        this.r = r;
+    }
+
+    public Partida getPartida() {
+        return partida;
+    }
+
+    public void setPartida(Partida partida) {
+        this.partida = partida;
+    }
+
+    public List<HexagonVertex> getVertexs() {
+        return vertexs;
+    }
+
+    public void setVertexs(List<HexagonVertex> vertexs) {
+        this.vertexs = vertexs;
+    }
+
 }
