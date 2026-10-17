@@ -271,6 +271,51 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 
 	@Override
 	public List<Vertex> vertexsDisponibles(int idJugador) {
-		throw new UnsupportedOperationException("Not implemented yet");
+		var session = sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+
+			var jugador = session.get(Jugador.class, idJugador);
+			if (jugador == null)
+				throw new IllegalArgumentException("Jugador not found with id: " + idJugador);
+
+			var partida = jugador.getPartida();
+			var preparacio = partida.getEstat() == EstatPartida.PREPARACIO;
+
+			// all vertexs that don't have a building on them and don't have a building
+			// on an adjacent vertex
+			var jpql = """
+					select v from Vertex v
+					where v.partida = :partida
+					  and not exists (select a from Assentament a where a.vertex = v)
+					  and not exists (
+					      select a from Assentament a, Aresta ar
+					      where (ar.vertexA = v and a.vertex = ar.vertexB)
+					         or (ar.vertexB = v and a.vertex = ar.vertexA))
+					""";
+
+			// if we're not in the preparation phase, only allow vertexs that are connected
+			// to one of the player's roads
+			if (!preparacio) {
+				jpql += """
+						  and exists (
+						      select c from Carretera c
+						      where c.propietari = :jugador
+						        and (c.aresta.vertexA = v or c.aresta.vertexB = v))
+						""";
+			}
+
+			var query = session.createQuery(jpql + " order by v.codi", Vertex.class)
+					.setParameter("partida", partida);
+			if (!preparacio)
+				query.setParameter("jugador", jugador);
+			var vertices = query.getResultList();
+
+			session.getTransaction().commit();
+			return vertices;
+		} catch (RuntimeException e) {
+			handleException(session, e);
+			return List.of();
+		}
 	}
 }
