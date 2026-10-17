@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.example.relationships.classes.Jugador;
 import org.example.relationships.classes.RecursJugador;
+import org.example.relationships.classes.Vertex;
+import org.example.relationships.enums.TipusRecurs;
 import org.hibernate.Session;
 
 public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugadorDao {
@@ -14,11 +16,12 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				.uniqueResult();
 	}
 	
-	public String MostrarRecursos(int idJugador) {
+	@Override
+	public String mostrarRecursos(int idJugador) {
 		Session session = sessionFactory.getCurrentSession();
 		try {
 			session.beginTransaction();
-			String text = MostrarRecursos(session, idJugador);
+			String text = mostrarRecursos(session, idJugador);
 			session.getTransaction().commit();
 			return text;
 		} catch (RuntimeException e) {
@@ -27,7 +30,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 		}
 	}
 	
-	private String MostrarRecursos(Session session, int idJugador) {
+	private String mostrarRecursos(Session session, int idJugador) {
 		Jugador v = buscarPerId(session, Jugador.class, idJugador);
 		if (v == null) {
 			return "No existeix el jugador " + idJugador;
@@ -43,5 +46,53 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 		return sb.toString();
 	}
 
+	@Override
+	public void construirCarretera(int idJugador, int idAresta) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
 
+	@Override
+	public void construirPoblat(int idJugador, int idVertex) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public void millorarACiutat(int idJugador, int idVertex) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public void comerciarBanca(int idJugador, TipusRecurs dona, TipusRecurs rep) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public int calcularPunts(int idJugador) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public void passarTorn(int idJugador) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public void moureLladre(int idJugador, int idHexagon, Integer idJugadorVictima) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public void comprarCarta(int idJugador) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public void jugarCarta(int idJugador, int idCarta, TipusRecurs recurs) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public List<Vertex> vertexsDisponibles(int idJugador) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
 }
