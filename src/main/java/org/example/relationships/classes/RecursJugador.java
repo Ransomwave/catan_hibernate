@@ -42,4 +42,12 @@ public class RecursJugador {
 
     public RecursJugador() {
     }
+
+	public Integer getQuantitat() {
+		return quantitat;
+	}
+
+	public TipusRecurs getTipus() {
+		return tipus;
+	}
 }

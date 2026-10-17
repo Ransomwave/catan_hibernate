@@ -75,4 +75,17 @@ public class Jugador {
     public Jugador() {
     }
 
+	public String getNom() {
+		return nom;
+	}
+
+	public Set<RecursJugador> getInventari() {
+		return inventari;
+	}
+
+	public ColorJugador getColor() {
+		return color;
+	}
+
+	
 }
