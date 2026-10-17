@@ -19,8 +19,8 @@ public class Hexagon {
 
     @NotNull
     @Column(nullable = false)
-    @Min(0)
-    @Max(18)
+    @Min(1)
+    @Max(19)
     private Integer codi;
 
     @NotNull
@@ -53,16 +53,13 @@ public class Hexagon {
     public Hexagon() {
     }
 
-    public Hexagon(@Min(0) @Max(18) Integer codi, @NotNull TipusTerreny terreny,
-            @Min(2) @Max(12) Integer numero, @Min(-2) @Max(2) int q, @Min(-2) @Max(2) int r, Partida partida,
-            List<HexagonVertex> vertexs) {
+    public Hexagon(Integer codi, TipusTerreny terreny, Integer numero, int q, int r, Partida partida) {
         this.codi = codi;
         this.terreny = terreny;
         this.numero = numero;
         this.q = q;
         this.r = r;
         this.partida = partida;
-        this.vertexs = vertexs;
     }
 
 }

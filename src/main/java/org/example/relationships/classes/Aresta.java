@@ -36,4 +36,14 @@ public class Aresta {
 	@JoinColumn(name = "vertex_b_id", nullable = false)
 	private Vertex vertexB;
 
+	public Aresta() {
+	}
+
+	public Aresta(Integer codi, Partida partida, Vertex vertexA, Vertex vertexB) {
+		this.codi = codi;
+		this.partida = partida;
+		this.vertexA = vertexA;
+		this.vertexB = vertexB;
+	}
+
 }

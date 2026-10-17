@@ -21,7 +21,7 @@ public class SessionManager {
     public static synchronized SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             try {
-                sessionFactory = new Configuration().configure("daoHibernate.cfg.xml").buildSessionFactory();
+                sessionFactory = new Configuration().configure().buildSessionFactory();
             } catch (HibernateException e) {
                 System.err.println("Error al crear la SessionFactory: " + e.getMessage());
                 throw new ExceptionInInitializerError(e);
