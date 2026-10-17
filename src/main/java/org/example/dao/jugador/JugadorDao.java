@@ -1,8 +1,8 @@
-package org.example.dao;
+package org.example.dao.jugador;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.example.dao.GenericDao;
 import org.example.relationships.classes.Jugador;
 import org.example.relationships.classes.RecursJugador;
 import org.example.relationships.classes.Vertex;
@@ -15,7 +15,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				.setParameter("id", id)
 				.uniqueResult();
 	}
-	
+
 	@Override
 	public String mostrarRecursos(int idJugador) {
 		Session session = sessionFactory.getCurrentSession();
@@ -29,7 +29,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			return "Error base de datos";
 		}
 	}
-	
+
 	private String mostrarRecursos(Session session, int idJugador) {
 		Jugador v = buscarPerId(session, Jugador.class, idJugador);
 		if (v == null) {
