@@ -48,6 +48,13 @@ public class CartaDesenvolupament {
         this.rondaCompra = rondaCompra;
     }
 
+    public CartaDesenvolupament(TipusCarta tipus, boolean usada, Integer rondaCompra, Partida partida) {
+        this.tipus = tipus;
+        this.usada = usada;
+        this.rondaCompra = rondaCompra;
+        this.partida = partida;
+    }
+
     public CartaDesenvolupament() {
     }
 

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.example.dao.GenericDao;
 import org.example.relationships.classes.Aresta;
+import org.example.relationships.classes.CartaDesenvolupament;
 import org.example.relationships.classes.Hexagon;
 import org.example.relationships.classes.HexagonVertex;
 import org.example.relationships.classes.Jugador;
@@ -20,10 +21,11 @@ import org.example.relationships.classes.Partida;
 import org.example.relationships.classes.Vertex;
 import org.example.relationships.enums.ColorJugador;
 import org.example.relationships.enums.EstatPartida;
+import org.example.relationships.enums.TipusCarta;
 import org.example.relationships.enums.TipusTerreny;
 import org.hibernate.Session;
 
-public class PartidaDao extends GenericDao<Partida, Long> implements IPartidaDao {
+public class PartidaDao extends GenericDao<Partida, Integer> implements IPartidaDao {
 
     public Integer iniciarPartida(List<String> playerNames) {
         var session = sessionFactory.getCurrentSession();
@@ -35,7 +37,7 @@ public class PartidaDao extends GenericDao<Partida, Long> implements IPartidaDao
 
             // create partida
             var partida = new Partida(EstatPartida.PREPARACIO, 1, 10);
-            session.persist(partida);
+            session.persist(partida); // persisting makes the object managed, Hibernate will take care of it for us
 
             // shuffle names and instantiate players with random turn order
             var names = new ArrayList<>(playerNames);
@@ -43,9 +45,21 @@ public class PartidaDao extends GenericDao<Partida, Long> implements IPartidaDao
             for (var i = 0; i < names.size(); i++) {
                 var player = new Jugador(names.get(i), ColorJugador.values()[i], i + 1, 0, partida);
                 session.persist(player); // also saves its 5 RecursJugador (cascade)
+                if (i == 0)
+                    partida.setActiu(player); // set the first player as the active one
             }
 
             loadBoard(session, partida);
+
+            // create the development card pile
+            // we don't need to collect the objects because Hibernate associates them with
+            // the game automatically, as the pile field is "mappedBy"
+            for (var i = 0; i < 14; i++)
+                session.persist(new CartaDesenvolupament(TipusCarta.CAVALLER, false, null, partida));
+            for (var i = 0; i < 5; i++)
+                session.persist(new CartaDesenvolupament(TipusCarta.PUNT_VICTORIA, false, null, partida));
+            for (var i = 0; i < 2; i++)
+                session.persist(new CartaDesenvolupament(TipusCarta.MONOPOLI, false, null, partida));
 
             session.getTransaction().commit();
             return partida.getId();
@@ -134,5 +148,42 @@ public class PartidaDao extends GenericDao<Partida, Long> implements IPartidaDao
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Override
+    public void mostrarTauler(int idPartida) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'mostrarTauler'");
+    }
+
+    @Override
+    public void mostrarPartida(int idPartida) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'mostrarPartida'");
+    }
+
+    @Override
+    public void tirarDaus(int idPartida) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'tirarDaus'");
+    }
+
+    @Override
+    public void comprovarVictoria(int idPartida) {
+        throw new UnsupportedOperationException("Unimplemented method 'comprovarVictoria'");
+    }
+
+    /**
+     * Version of comprovarVictoria for other DAO methods to call inside their
+     * own transaction (after building a poblat or ciutat, buying a card or
+     * playing a CAVALLER).
+     */
+    public static void comprovarVictoria(Session session, Partida partida) {
+        // ponytail: no-op until implemented, so callers can already call it
+    }
+
+    @Override
+    public Jugador exercitMesGran(int idPartida) {
+        throw new UnsupportedOperationException("Unimplemented method 'exercitMesGran'");
     }
 }
