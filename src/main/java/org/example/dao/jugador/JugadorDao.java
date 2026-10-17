@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.example.dao.GameRulesHelper;
 import org.example.dao.GenericDao;
+import org.example.dao.partida.PartidaDao;
 import org.example.relationships.classes.Aresta;
 import org.example.relationships.classes.Carretera;
+import org.example.relationships.classes.Hexagon;
 import org.example.relationships.classes.Jugador;
+import org.example.relationships.classes.Poblat;
 import org.example.relationships.classes.RecursJugador;
 import org.example.relationships.classes.Vertex;
 import org.example.relationships.enums.EstatPartida;
@@ -143,7 +146,92 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 
 	@Override
 	public void construirPoblat(int idJugador, int idVertex) {
-		throw new UnsupportedOperationException("Not implemented yet");
+		var session = sessionFactory.getCurrentSession();
+		try {
+			session.beginTransaction();
+
+			var jugador = session.get(Jugador.class, idJugador);
+			if (jugador == null)
+				throw new IllegalArgumentException("Jugador not found with id: " + idJugador);
+
+			GameRulesHelper.checkAction(jugador, true);
+			var partida = jugador.getPartida();
+			var preparacio = partida.getEstat() == EstatPartida.PREPARACIO;
+
+			var vertex = session.get(Vertex.class, idVertex);
+			if (vertex == null || !vertex.getPartida().getId().equals(partida.getId()))
+				throw new IllegalArgumentException("Vertex " + idVertex + " isn't part of this game");
+
+			var buildingsOnVertex = session.createQuery(
+					"select count(a) from Assentament a where a.vertex = :vertex", Long.class)
+					.setParameter("vertex", vertex)
+					.getSingleResult();
+			if (buildingsOnVertex > 0)
+				throw new IllegalStateException("There's already a building on this vertex");
+
+			// don't allow building if there's another building on an adjacent vertex
+			// (distance rule)
+			var buildingsNextTo = session.createQuery("""
+					select count(a) from Assentament a, Aresta ar
+					where (ar.vertexA = :vertex and a.vertex = ar.vertexB)
+					   or (ar.vertexB = :vertex and a.vertex = ar.vertexA)
+					""", Long.class)
+					.setParameter("vertex", vertex)
+					.getSingleResult();
+			if (buildingsNextTo > 0)
+				throw new IllegalStateException("Too close to another building (distance rule)");
+
+			var ownPoblats = session.createQuery(
+					"select count(p) from Poblat p where p.propietari = :jugador", Long.class)
+					.setParameter("jugador", jugador)
+					.getSingleResult();
+			if (ownPoblats >= 5)
+				throw new IllegalStateException("You've already built 5 poblats");
+
+			if (preparacio) {
+				if (ownPoblats >= partida.getRonda()) // the player can only place 1 poblat per turn during the
+														// preparation phase
+					throw new IllegalStateException("You've already placed your poblat this turn");
+			} else {
+				var ownRoadsHere = session.createQuery("""
+						select count(c) from Carretera c
+						where c.propietari = :jugador
+						  and (c.aresta.vertexA = :vertex or c.aresta.vertexB = :vertex)
+						""", Long.class)
+						.setParameter("jugador", jugador)
+						.setParameter("vertex", vertex)
+						.getSingleResult();
+				if (ownRoadsHere == 0)
+					throw new IllegalStateException("The poblat must be connected to one of your roads");
+
+				GameRulesHelper.pay(jugador, GameRulesHelper.COST_POBLAT);
+			}
+
+			var poblat = new Poblat();
+			poblat.setPropietari(jugador);
+			poblat.setVertex(vertex);
+			session.persist(poblat);
+
+			// the second poblat of the preparation phase gives 1 resource for each
+			// hexagon it touches (desert gives nothing)
+			if (preparacio && ownPoblats == 1) {
+				var hexagons = session.createQuery(
+						"select hv.hexagon from HexagonVertex hv where hv.vertex = :vertex", Hexagon.class)
+						.setParameter("vertex", vertex)
+						.getResultList();
+				for (var hexagon : hexagons) {
+					var resource = hexagon.getTerreny().getResource();
+					if (resource != null)
+						GameRulesHelper.addResource(jugador, resource, 1);
+				}
+			}
+
+			PartidaDao.comprovarVictoria(session, partida);
+
+			session.getTransaction().commit();
+		} catch (RuntimeException e) {
+			handleException(session, e);
+		}
 	}
 
 	@Override

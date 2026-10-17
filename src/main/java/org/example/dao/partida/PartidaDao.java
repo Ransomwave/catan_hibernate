@@ -261,7 +261,16 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
 
     @Override
     public void comprovarVictoria(int idPartida) {
+        // TODO: ALL THIS SHOULD DO IS CALL comprovarVictoria(Session, Partida) AND WRAP
+        // IT IN A TRANSACTION!!!
         throw new UnsupportedOperationException("Unimplemented method 'comprovarVictoria'");
+    }
+
+    public static void comprovarVictoria(Session session, Partida partida) {
+        // TODO:
+        // we need this to be atomic otherwise other methods that call this will open
+        // transactions that will mess up with the would-be opened transaction of this
+        // method
     }
 
     @Override
