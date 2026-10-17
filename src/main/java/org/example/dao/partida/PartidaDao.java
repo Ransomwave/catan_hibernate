@@ -9,11 +9,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
+import org.example.dao.GameRulesHelper;
 import org.example.dao.GenericDao;
 import org.example.relationships.classes.Aresta;
+import org.example.relationships.classes.Assentament;
 import org.example.relationships.classes.CartaDesenvolupament;
+import org.example.relationships.classes.Ciutat;
 import org.example.relationships.classes.Hexagon;
 import org.example.relationships.classes.HexagonVertex;
 import org.example.relationships.classes.Jugador;
@@ -22,10 +25,13 @@ import org.example.relationships.classes.Vertex;
 import org.example.relationships.enums.ColorJugador;
 import org.example.relationships.enums.EstatPartida;
 import org.example.relationships.enums.TipusCarta;
+import org.example.relationships.enums.TipusRecurs;
 import org.example.relationships.enums.TipusTerreny;
 import org.hibernate.Session;
 
 public class PartidaDao extends GenericDao<Partida, Integer> implements IPartidaDao {
+
+    final private Random random = new Random();
 
     public Integer iniciarPartida(List<String> playerNames) {
         var session = sessionFactory.getCurrentSession();
@@ -163,23 +169,99 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
     }
 
     @Override
-    public void tirarDaus(int idPartida) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'tirarDaus'");
+    public String tirarDaus(int idPartida) {
+        var session = sessionFactory.getCurrentSession();
+        try {
+            session.beginTransaction();
+
+            var partida = session.get(Partida.class, idPartida);
+            if (partida == null)
+                throw new IllegalArgumentException("Partida not found with id: " + idPartida);
+
+            if (partida.getEstat() != EstatPartida.EN_CURS)
+                throw new IllegalStateException("The dice can only be rolled while the game is in progress");
+            if (partida.isDausTirats())
+                throw new IllegalStateException("The dice have already been rolled this turn");
+
+            var die1 = random.nextInt(1, 7);
+            var die2 = random.nextInt(1, 7);
+            var roll = die1 + die2;
+
+            partida.setUltimaTirada(roll);
+            partida.setDausTirats(true);
+
+            var summary = new StringBuilder("Roll: " + die1 + " + " + die2 + " = " + roll + "\n");
+
+            if (roll == 7) {
+                // each player with more than 7 resources must discard half of them (rounded
+                // down)
+                summary.append("No production, the robber must be moved\n");
+                for (var jugador : partida.getJugadors()) {
+                    var total = GameRulesHelper.totalResources(jugador);
+                    if (total <= 7)
+                        continue;
+
+                    // put one entry per resource card in a list and shuffle it, so the
+                    // discarded cards are random
+                    var cards = new ArrayList<TipusRecurs>();
+                    for (var recurs : jugador.getInventari()) {
+                        for (var i = 0; i < recurs.getQuantitat(); i++)
+                            cards.add(recurs.getTipus());
+                    }
+                    Collections.shuffle(cards);
+
+                    var toDiscard = total / 2;
+                    for (var i = 0; i < toDiscard; i++)
+                        GameRulesHelper.addResource(jugador, cards.get(i), -1);
+
+                    summary.append(jugador.getNom() + " discards " + toDiscard + " resources\n");
+                }
+                partida.setLladrePendent(true);
+            } else {
+                // if it's not 7, each hexagon with that number produces resources for the
+                // players with settlements or cities on its vertices, unless the robber is on
+                // that hexagon
+                var rows = session.createQuery("""
+                        select hv.hexagon.terreny, a
+                        from HexagonVertex hv
+                        join Assentament a on a.vertex = hv.vertex
+                        where hv.hexagon.partida = :partida
+                          and hv.hexagon.numero = :roll
+                          and hv.hexagon <> :lladre
+                        """, Object[].class)
+                        .setParameter("partida", partida)
+                        .setParameter("roll", roll)
+                        .setParameter("lladre", partida.getLladre())
+                        .getResultList();
+
+                if (rows.isEmpty())
+                    summary.append("Nobody gets anything\n");
+
+                // for each settlement or city on a hexagon with the rolled number, give the
+                // owner the corresponding resource (1 for settlement, 2 for city)
+                for (var row : rows) {
+                    var terreny = (TipusTerreny) row[0];
+                    var assentament = (Assentament) row[1];
+                    var jugador = assentament.getPropietari();
+
+                    var amount = assentament instanceof Ciutat ? 2 : 1;
+
+                    GameRulesHelper.addResource(jugador, terreny.getResource(), amount);
+                    summary.append(jugador.getNom() + " gets " + amount + " " + terreny.getResource() + "\n");
+                }
+            }
+
+            session.getTransaction().commit();
+            return summary.toString();
+        } catch (RuntimeException e) {
+            handleException(session, e);
+            return e.getMessage();
+        }
     }
 
     @Override
     public void comprovarVictoria(int idPartida) {
         throw new UnsupportedOperationException("Unimplemented method 'comprovarVictoria'");
-    }
-
-    /**
-     * Version of comprovarVictoria for other DAO methods to call inside their
-     * own transaction (after building a poblat or ciutat, buying a card or
-     * playing a CAVALLER).
-     */
-    public static void comprovarVictoria(Session session, Partida partida) {
-        // ponytail: no-op until implemented, so callers can already call it
     }
 
     @Override
