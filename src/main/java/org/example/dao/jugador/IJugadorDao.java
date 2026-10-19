@@ -8,7 +8,7 @@ import org.example.relationships.classes.Vertex;
 import org.example.relationships.enums.TipusRecurs;
 
 public interface IJugadorDao extends IGenericDao<Jugador, Integer> {
-    String mostrarRecursos(int idJugador);
+    void mostrarRecursos(int idJugador);
 
     void construirCarretera(int idJugador, int idAresta);
 
