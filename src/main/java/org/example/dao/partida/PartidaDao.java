@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.example.dao.GenericDao;
 import org.example.relationships.classes.Aresta;
+import org.example.relationships.classes.Assentament;
 import org.example.relationships.classes.CartaDesenvolupament;
 import org.example.relationships.classes.Hexagon;
 import org.example.relationships.classes.HexagonVertex;
@@ -151,16 +152,160 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
     }
 
     @Override
+
     public void mostrarTauler(int idPartida) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mostrarTauler'");
+    Session session = sessionFactory.getCurrentSession();
+
+    try {
+        session.beginTransaction();
+
+        Partida partida = session.get(Partida.class, idPartida);
+
+        if (partida == null) {
+            throw new RuntimeException("No existeix aquesta partida");
+        }
+
+        List<Hexagon> hexagons = session.createQuery(
+                "from Hexagon h where h.partida.id = :id " +
+                "order by h.codi",
+                Hexagon.class)
+                .setParameter("id", idPartida)
+                .getResultList();
+
+        System.out.println("=== TAULER DE LA PARTIDA "
+                + idPartida + " ===");
+
+        for (Hexagon hexagon : hexagons) {
+            System.out.println();
+            System.out.println("Hexàgon " + hexagon.getCodi());
+            System.out.println("Terreny: " + hexagon.getTerreny());
+            System.out.println("Número: "
+                    + (hexagon.getNumero() == null
+                    ? "Sense número" : hexagon.getNumero()));
+
+            boolean hiHaLladre = partida.getLladre() != null
+                    && partida.getLladre().getId()
+                    .equals(hexagon.getId());
+
+            System.out.println("Lladre: "
+                    + (hiHaLladre ? "Sí" : "No"));
+
+            List<HexagonVertex> vertexs = session.createQuery(
+                    "from HexagonVertex hv " +
+                    "where hv.hexagon.id = :id order by hv.posicio",
+                    HexagonVertex.class)
+                    .setParameter("id", hexagon.getId())
+                    .getResultList();
+
+            for (HexagonVertex hv : vertexs) {
+                Vertex vertex = hv.getVertex();
+
+                Assentament assentament = session.createQuery(
+                        "from Assentament a where a.vertex.id = :id",
+                        Assentament.class)
+                        .setParameter("id", vertex.getId())
+                        .uniqueResult();
+
+                if (assentament != null) {
+                    System.out.println(
+                            "  Vèrtex " + vertex.getCodi()
+                            + ": "
+                            + assentament.getClass().getSimpleName()
+                            + " de "
+                            + assentament.getPropietari().getNom());
+                }
+            }
+        }
+
+        session.getTransaction().commit();
+
+    } catch (RuntimeException e) {
+        if (session.getTransaction().isActive()) {
+            session.getTransaction().rollback();
+        }
+        throw e;
     }
+}
+
 
     @Override
+
     public void mostrarPartida(int idPartida) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mostrarPartida'");
+    Session session = sessionFactory.getCurrentSession();
+
+    try {
+        session.beginTransaction();
+
+        Partida partida = session.get(Partida.class, idPartida);
+
+        if (partida == null) {
+            throw new RuntimeException("No existeix aquesta partida");
+        }
+
+        System.out.println("=== PARTIDA " + partida.getId() + " ===");
+        System.out.println("Estat: " + partida.getEstat());
+        System.out.println("Ronda: " + partida.getRonda());
+        System.out.println("Jugador actiu: "
+                + (partida.getActiu() == null
+                ? "Cap" : partida.getActiu().getNom()));
+        System.out.println("Última tirada: "
+                + (partida.getUltimaTirada() == null
+                ? "Sense tirada" : partida.getUltimaTirada()));
+
+        List<Jugador> jugadors = session.createQuery(
+                "from Jugador j where j.partida.id = :id " +
+                "order by j.ordreTorn",
+                Jugador.class)
+                .setParameter("id", idPartida)
+                .getResultList();
+
+        for (Jugador jugador : jugadors) {
+            Long poblats = session.createQuery(
+                    "select count(p) from Poblat p " +
+                    "where p.propietari.id = :id", Long.class)
+                    .setParameter("id", jugador.getId())
+                    .getSingleResult();
+
+            Long ciutats = session.createQuery(
+                    "select count(c) from Ciutat c " +
+                    "where c.propietari.id = :id", Long.class)
+                    .setParameter("id", jugador.getId())
+                    .getSingleResult();
+
+            Long carreteres = session.createQuery(
+                    "select count(c) from Carretera c " +
+                    "where c.propietari.id = :id", Long.class)
+                    .setParameter("id", jugador.getId())
+                    .getSingleResult();
+
+            Long recursos = session.createQuery(
+                    "select coalesce(sum(r.quantitat), 0) " +
+                    "from RecursJugador r where r.jugador.id = :id",
+                    Long.class)
+                    .setParameter("id", jugador.getId())
+                    .getSingleResult();
+
+            int punts = calcularPuntsEnSessio(session, jugador);
+
+            System.out.println();
+            System.out.println("Jugador: " + jugador.getNom());
+            System.out.println("Punts: " + punts);
+            System.out.println("Poblats: " + poblats);
+            System.out.println("Ciutats: " + ciutats);
+            System.out.println("Carreteres: " + carreteres);
+            System.out.println("Recursos totals: " + recursos);
+        }
+
+        session.getTransaction().commit();
+
+    } catch (RuntimeException e) {
+        if (session.getTransaction().isActive()) {
+            session.getTransaction().rollback();
+        }
+        throw e;
     }
+}
+
 
     @Override
     public void tirarDaus(int idPartida) {
@@ -169,9 +314,25 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
     }
 
     @Override
-    public void comprovarVictoria(int idPartida) {
-        throw new UnsupportedOperationException("Unimplemented method 'comprovarVictoria'");
-    }
+
+    public void comprovarVictoria(Session session, Partida partida) {
+    List<Jugador> jugadors = session.createQuery(
+            "from Jugador j where j.partida.id = :id",
+            Jugador.class)
+            .setParameter("id", partida.getId())
+            .getResultList();
+
+    for (Jugador jugador : jugadors) {
+        int punts = calcularPuntsEnSessio(session, jugador);
+
+        if (punts >= partida.getPuntsPerGuanyar()) {
+            partida.setGuanyador(jugador);
+            partida.setEstat(EstatPartida.FINALITZADA);
+            return;
+        }
+    	}
+    	}
+
 
     /**
      * Version of comprovarVictoria for other DAO methods to call inside their
@@ -182,8 +343,56 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
         // ponytail: no-op until implemented, so callers can already call it
     }
 
-    @Override
-    public Jugador exercitMesGran(int idPartida) {
-        throw new UnsupportedOperationException("Unimplemented method 'exercitMesGran'");
+
+public Jugador exercitMesGran(int idPartida) {
+    Session session = sessionFactory.getCurrentSession();
+
+    try {
+        session.beginTransaction();
+
+        Jugador jugador = exercitMesGranEnSessio(session, idPartida);
+
+        session.getTransaction().commit();
+        return jugador;
+
+    } catch (RuntimeException e) {
+        if (session.getTransaction().isActive()) {
+            session.getTransaction().rollback();
+        }
+        throw e;
     }
+}
+
+private Jugador exercitMesGranEnSessio(
+        Session session, int idPartida) {
+
+    List<Jugador> jugadors = session.createQuery(
+            "from Jugador j where j.partida.id = :id " +
+            "order by j.cavallersJugats desc",
+            Jugador.class)
+            .setParameter("id", idPartida)
+            .getResultList();
+
+    if (jugadors.isEmpty()) {
+        return null;
+    }
+
+    Jugador primer = jugadors.get(0);
+
+    if (primer.getCavallersJugats() < 3) {
+        return null;
+    }
+
+    if (jugadors.size() > 1) {
+        Jugador segon = jugadors.get(1);
+
+        if (primer.getCavallersJugats()
+                .equals(segon.getCavallersJugats())) {
+            return null;
+        }
+    }
+
+    return primer;
+}
+
 }
