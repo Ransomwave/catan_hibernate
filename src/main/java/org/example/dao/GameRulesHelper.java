@@ -7,6 +7,8 @@ import org.example.relationships.classes.RecursJugador;
 import org.example.relationships.enums.EstatPartida;
 import org.example.relationships.enums.TipusRecurs;
 
+// Aquesta classe l'hem afegit nosaltres per tenir les regles del joc en un sol lloc i no repetir codi a cadascuna de les nostres implementacions
+
 /**
  * Game rules shared by the DAOs. Every method works on entities loaded in the
  * current session, so changes are saved when the caller commits. Rule
