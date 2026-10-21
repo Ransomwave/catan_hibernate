@@ -368,10 +368,68 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 		}
 	}
 
-	@Override
-	public int calcularPunts(int idJugador) {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+@Override
+public int calcularPunts(int idJugador) {
+    Session session = sessionFactory.getCurrentSession();
+
+    try {
+        session.beginTransaction();
+
+        Jugador jugador = session.get(Jugador.class, idJugador);
+
+        if (jugador == null) {
+            throw new RuntimeException("No existeix aquest jugador");
+        }
+
+        int punts = calcularPuntsEnSessio(session, jugador);
+
+        session.getTransaction().commit();
+        return punts;
+
+    } catch (RuntimeException e) {
+        if (session.getTransaction().isActive()) {
+            session.getTransaction().rollback();
+        }
+        throw e;
+    }
+}
+
+public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
+    Long poblats = session.createQuery(
+            "select count(p) from Poblat p " +
+            "where p.propietari.id = :id", Long.class)
+            .setParameter("id", jugador.getId())
+            .getSingleResult();
+
+    Long ciutats = session.createQuery(
+            "select count(c) from Ciutat c " +
+            "where c.propietari.id = :id", Long.class)
+            .setParameter("id", jugador.getId())
+            .getSingleResult();
+
+    Long cartes = session.createQuery(
+            "select count(c) from CartaDesenvolupament c " +
+            "where c.propietari.id = :id and c.tipus = :tipus",
+            Long.class)
+            .setParameter("id", jugador.getId())
+            .setParameter("tipus", TipusCarta.PUNT_VICTORIA)
+            .getSingleResult();
+
+    int punts = poblats.intValue()
+            + ciutats.intValue() * 2
+            + cartes.intValue();
+
+    Jugador exercit = PartidaDao.exercitMesGranEnSessio(
+            session, jugador.getPartida().getId());
+
+    if (exercit != null
+            && exercit.getId().equals(jugador.getId())) {
+        punts += 2;
+    }
+
+    return punts;
+}
+
 
 	@Override
 	public void passarTorn(int idJugador) {
