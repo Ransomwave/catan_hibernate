@@ -226,10 +226,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
         session.getTransaction().commit();
 
     } catch (RuntimeException e) {
-        if (session.getTransaction().isActive()) {
-            session.getTransaction().rollback();
-        }
-        throw e;
+        handleException(session, e);
     }
 }
 
@@ -305,10 +302,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
         session.getTransaction().commit();
 
     } catch (RuntimeException e) {
-        if (session.getTransaction().isActive()) {
-            session.getTransaction().rollback();
-        }
-        throw e;
+        handleException(session, e);
     }
 }
 
@@ -453,10 +447,8 @@ public Jugador exercitMesGran(int idPartida) {
         return jugador;
 
     } catch (RuntimeException e) {
-        if (session.getTransaction().isActive()) {
-            session.getTransaction().rollback();
-        }
-        throw e;
+        handleException(session, e);
+        return null;
     }
 }
 

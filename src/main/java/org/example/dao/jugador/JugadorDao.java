@@ -296,11 +296,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			session.getTransaction().commit();
 
 		} catch (RuntimeException e) {
-			if (session.getTransaction().isActive()) {
-				session.getTransaction().rollback();
-			}
-
-			throw e;
+			handleException(session, e);
 		}
 	}
 
@@ -323,10 +319,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			GameRulesHelper.addResource(jugador, rep, 1);
 			session.getTransaction().commit();
 		} catch (RuntimeException e) {
-			if (session.getTransaction().isActive()) {
-				session.getTransaction().rollback();
-			}
-			throw e;
+			handleException(session, e);
 		}
 	}
 
@@ -349,10 +342,8 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			return punts;
 
 		} catch (RuntimeException e) {
-			if (session.getTransaction().isActive()) {
-				session.getTransaction().rollback();
-			}
-			throw e;
+			handleException(session, e);
+			return -1;
 		}
 	}
 
@@ -630,10 +621,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			session.getTransaction().commit();
 
 		} catch (RuntimeException e) {
-			if (session.getTransaction().isActive()) {
-				session.getTransaction().rollback();
-			}
-			throw e;
+			handleException(session, e);
 		}
 	}
 
@@ -669,11 +657,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			session.getTransaction().commit();
 
 		} catch (RuntimeException e) {
-			if (session.getTransaction().isActive()) {
-				session.getTransaction().rollback();
-			}
-
-			throw e;
+			handleException(session, e);
 		}
 	}
 
@@ -737,11 +721,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			session.getTransaction().commit();
 
 		} catch (RuntimeException e) {
-			if (session.getTransaction().isActive()) {
-				session.getTransaction().rollback();
-			}
-
-			throw e;
+			handleException(session, e);
 		}
 	}
 
