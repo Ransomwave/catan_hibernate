@@ -2,6 +2,7 @@ package org.example.dao.jugador;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.example.dao.GameRulesHelper;
@@ -283,25 +284,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				throw new IllegalStateException(
 						"Ja tens el maxim de 4 ciutats.");
 			}
-			RecursJugador blat = null;
-			RecursJugador mineral = null;
-			for (RecursJugador recurs : jugador.getInventari()) {
-				if (recurs.getTipus() == TipusRecurs.BLAT) {
-					blat = recurs;
-				}
-
-				if (recurs.getTipus() == TipusRecurs.MINERAL) {
-					mineral = recurs;
-				}
-			}
-			if (blat == null || mineral == null
-					|| blat.getQuantitat() < 2
-					|| mineral.getQuantitat() < 3) {
-				throw new IllegalStateException(
-						"No tens prou recursos per construir una ciutat.");
-			}
-			blat.setQuantitat(blat.getQuantitat() - 2);
-			mineral.setQuantitat(mineral.getQuantitat() - 3);
+			GameRulesHelper.pay(jugador, GameRulesHelper.COST_CIUTAT);
 			Ciutat ciutat = new Ciutat();
 			ciutat.setVertex(vertex);
 			ciutat.setPropietari(jugador);
@@ -335,27 +318,8 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				throw new IllegalArgumentException(
 						"Els tipus de recursos han de ser diferents.");
 			}
-			RecursJugador recursDonat = null;
-			RecursJugador recursRebut = null;
-			for (RecursJugador recurs : jugador.getInventari()) {
-				if (recurs.getTipus() == dona) {
-					recursDonat = recurs;
-				}
-
-				if (recurs.getTipus() == rep) {
-					recursRebut = recurs;
-				}
-			}
-			if (recursDonat == null || recursRebut == null) {
-				throw new IllegalStateException(
-						"No s'han trobat els recursos necessaris.");
-			}
-			if (recursDonat.getQuantitat() < 4) {
-				throw new IllegalStateException(
-						"No tens prou recursos per fer l'intercanvi.");
-			}
-			recursDonat.setQuantitat(recursDonat.getQuantitat() - 4);
-			recursRebut.setQuantitat(recursRebut.getQuantitat() + 1);
+			GameRulesHelper.pay(jugador, Map.of(dona, 4));
+			GameRulesHelper.addResource(jugador, rep, 1);
 			session.getTransaction().commit();
 		} catch (RuntimeException e) {
 			if (session.getTransaction().isActive()) {
@@ -655,25 +619,9 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 					int index = random.nextInt(
 							recursosDisponibles.size());
 
-					RecursJugador recursRobat = recursosDisponibles.get(index);
-					TipusRecurs tipus = recursRobat.getTipus();
-
-					RecursJugador recursJugador = null;
-
-					for (RecursJugador recurs : jugador.getInventari()) {
-						if (recurs.getTipus() == tipus) {
-							recursJugador = recurs;
-							break;
-						}
-					}
-
-					if (recursJugador == null) {
-						throw new IllegalStateException(
-								"El jugador no té registrat aquest tipus de recurs.");
-					}
-
-					recursRobat.setQuantitat(recursRobat.getQuantitat() - 1);
-					recursJugador.setQuantitat(recursJugador.getQuantitat() + 1);
+					TipusRecurs tipus = recursosDisponibles.get(index).getTipus();
+					GameRulesHelper.addResource(victima, tipus, -1);
+					GameRulesHelper.addResource(jugador, tipus, 1);
 				}
 			}
 			partida.setLladrePendent(false);
@@ -711,31 +659,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				throw new IllegalStateException(
 						"La pila de cartes de desenvolupament és buida.");
 			}
-			RecursJugador llana = null;
-			RecursJugador blat = null;
-			RecursJugador mineral = null;
-			for (RecursJugador recurs : jugador.getInventari()) {
-				if (recurs.getTipus() == TipusRecurs.LLANA) {
-					llana = recurs;
-				}
-
-				if (recurs.getTipus() == TipusRecurs.BLAT) {
-					blat = recurs;
-				}
-
-				if (recurs.getTipus() == TipusRecurs.MINERAL) {
-					mineral = recurs;
-				}
-			}
-			if (llana == null || blat == null || mineral == null || llana.getQuantitat() < 1 || blat.getQuantitat() < 1
-					|| mineral.getQuantitat() < 1) {
-				throw new IllegalStateException(
-						"No tens prou recursos per comprar una carta.");
-			}
-
-			llana.setQuantitat(llana.getQuantitat() - 1);
-			blat.setQuantitat(blat.getQuantitat() - 1);
-			mineral.setQuantitat(mineral.getQuantitat() - 1);
+			GameRulesHelper.pay(jugador, GameRulesHelper.COST_CARTA);
 			int index = random.nextInt(pila.size());
 			CartaDesenvolupament carta = pila.get(index);
 			carta.setPropietari(jugador);
@@ -798,33 +722,14 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				partida.setLladrePendent(true);
 				PartidaDao.comprovarVictoria(session, partida);
 			} else if (carta.getTipus() == TipusCarta.MONOPOLI) {
-				RecursJugador recursJugador = null;
-				for (RecursJugador r : jugador.getInventari()) {
-					if (r.getTipus() == recurs) {
-						recursJugador = r;
-						break;
-					}
-				}
-				if (recursJugador == null) {
-					throw new IllegalStateException(
-							"No s'ha trobat el recurs a l'inventari del jugador.");
-				}
+				RecursJugador recursJugador = GameRulesHelper.getResource(jugador, recurs);
 				for (Jugador altreJugador : partida.getJugadors()) {
-
 					if (altreJugador.getId().equals(idJugador)) {
 						continue;
 					}
-
-					for (RecursJugador r : altreJugador.getInventari()) {
-
-						if (r.getTipus() == recurs) {
-							recursJugador.setQuantitat(
-									recursJugador.getQuantitat() + r.getQuantitat());
-
-							r.setQuantitat(0);
-							break;
-						}
-					}
+					RecursJugador r = GameRulesHelper.getResource(altreJugador, recurs);
+					recursJugador.setQuantitat(recursJugador.getQuantitat() + r.getQuantitat());
+					r.setQuantitat(0);
 				}
 			}
 			carta.setUsada(true);
