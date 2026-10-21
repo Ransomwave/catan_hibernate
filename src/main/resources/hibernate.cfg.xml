@@ -23,7 +23,7 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
 
         <!-- Això ens permet xafardejar l'SQL que genera Hibernate. Opcional -->
-        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.show_sql">false</property>
         <!-- Això formata les sentències SQL -->
         <property name="hibernate.format_sql">true</property>
         <!-- Això mostra les sentències SQL en un altre color a la consola -->
