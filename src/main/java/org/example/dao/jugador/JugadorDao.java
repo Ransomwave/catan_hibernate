@@ -70,28 +70,28 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 
 			var jugador = session.get(Jugador.class, idJugador);
 			if (jugador == null)
-				throw new IllegalArgumentException("Jugador not found with id: " + idJugador);
+				throw new IllegalArgumentException("No existeix el jugador amb id: " + idJugador);
 
 			GameRulesHelper.checkAction(jugador, true);
 			var partida = jugador.getPartida();
 
 			var aresta = session.get(Aresta.class, idAresta);
 			if (aresta == null || !aresta.getPartida().getId().equals(partida.getId()))
-				throw new IllegalArgumentException("Aresta " + idAresta + " isn't part of this game");
+				throw new IllegalArgumentException("Aresta " + idAresta + " no pertany a aquesta partida");
 
 			var roadsOnAresta = session.createQuery(
 					"select count(c) from Carretera c where c.aresta = :aresta", Long.class)
 					.setParameter("aresta", aresta)
 					.getSingleResult();
 			if (roadsOnAresta > 0)
-				throw new IllegalStateException("There's already a road on this aresta");
+				throw new IllegalStateException("Ja hi ha una carretera en aquesta aresta");
 
 			var ownRoads = session.createQuery(
 					"select count(c) from Carretera c where c.propietari = :jugador", Long.class)
 					.setParameter("jugador", jugador)
 					.getSingleResult();
 			if (ownRoads >= 15)
-				throw new IllegalStateException("You've already built 15 roads");
+				throw new IllegalStateException("Ja has construït 15 carreteres");
 
 			var vertexA = aresta.getVertexA();
 			var vertexB = aresta.getVertexB();
@@ -113,7 +113,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 						.setParameter("vertexB", vertexB)
 						.getSingleResult();
 				if (newPoblats == 0)
-					throw new IllegalStateException("The road must touch the poblat you just placed");
+					throw new IllegalStateException("La carretera ha de tocar el poblat que acabes de col·locar");
 			} else {
 				// the road must touch one of the player's poblats/ciutats or another of
 				// their roads
@@ -137,7 +137,8 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 						.setParameter("vertexB", vertexB)
 						.getSingleResult();
 				if (ownAssentaments == 0 && ownConnectedRoads == 0)
-					throw new IllegalStateException("The road must be connected to one of your buildings or roads");
+					throw new IllegalStateException(
+							"La carretera ha d'estar connectada a una construcció o carretera teva");
 
 				GameRulesHelper.pay(jugador, GameRulesHelper.COST_CARRETERA);
 			}
@@ -161,7 +162,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 
 			var jugador = session.get(Jugador.class, idJugador);
 			if (jugador == null)
-				throw new IllegalArgumentException("Jugador not found with id: " + idJugador);
+				throw new IllegalArgumentException("No existeix el jugador amb id: " + idJugador);
 
 			GameRulesHelper.checkAction(jugador, true);
 			var partida = jugador.getPartida();
@@ -169,14 +170,14 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 
 			var vertex = session.get(Vertex.class, idVertex);
 			if (vertex == null || !vertex.getPartida().getId().equals(partida.getId()))
-				throw new IllegalArgumentException("Vertex " + idVertex + " isn't part of this game");
+				throw new IllegalArgumentException("Vertex " + idVertex + " no pertany a aquesta partida");
 
 			var buildingsOnVertex = session.createQuery(
 					"select count(a) from Assentament a where a.vertex = :vertex", Long.class)
 					.setParameter("vertex", vertex)
 					.getSingleResult();
 			if (buildingsOnVertex > 0)
-				throw new IllegalStateException("There's already a building on this vertex");
+				throw new IllegalStateException("Ja hi ha una construcció en aquest vèrtex");
 
 			// don't allow building if there's another building on an adjacent vertex
 			// (distance rule)
@@ -188,19 +189,19 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 					.setParameter("vertex", vertex)
 					.getSingleResult();
 			if (buildingsNextTo > 0)
-				throw new IllegalStateException("Too close to another building (distance rule)");
+				throw new IllegalStateException("Massa a prop d'una altra construcció");
 
 			var ownPoblats = session.createQuery(
 					"select count(p) from Poblat p where p.propietari = :jugador", Long.class)
 					.setParameter("jugador", jugador)
 					.getSingleResult();
 			if (ownPoblats >= 5)
-				throw new IllegalStateException("You've already built 5 poblats");
+				throw new IllegalStateException("Ja has construït 5 poblats");
 
 			if (preparacio) {
 				if (ownPoblats >= partida.getRonda()) // the player can only place 1 poblat per turn during the
 														// preparation phase
-					throw new IllegalStateException("You've already placed your poblat this turn");
+					throw new IllegalStateException("Ja has col·locat el poblat d'aquest torn");
 			} else {
 				var ownRoadsHere = session.createQuery("""
 						select count(c) from Carretera c
@@ -211,7 +212,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 						.setParameter("vertex", vertex)
 						.getSingleResult();
 				if (ownRoadsHere == 0)
-					throw new IllegalStateException("The poblat must be connected to one of your roads");
+					throw new IllegalStateException("El poblat ha d'estar connectat a una carretera teva");
 
 				GameRulesHelper.pay(jugador, GameRulesHelper.COST_POBLAT);
 			}
@@ -752,7 +753,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 
 			var jugador = session.get(Jugador.class, idJugador);
 			if (jugador == null)
-				throw new IllegalArgumentException("Jugador not found with id: " + idJugador);
+				throw new IllegalArgumentException("No existeix el jugador amb id: " + idJugador);
 
 			var partida = jugador.getPartida();
 			var preparacio = partida.getEstat() == EstatPartida.PREPARACIO;

@@ -40,19 +40,19 @@ public final class GameRulesHelper {
         var partida = jugador.getPartida();
 
         if (partida.getEstat() == EstatPartida.FINALITZADA)
-            throw new IllegalStateException("The game has already finished");
+            throw new IllegalStateException("La partida ja ha finalitzat");
         if (partida.getEstat() == EstatPartida.PREPARACIO && !allowedInPreparacio)
-            throw new IllegalStateException("This action isn't allowed during the preparation phase");
+            throw new IllegalStateException("Aquesta acció no es pot fer durant la fase de preparació");
 
         var actiu = partida.getActiu();
         if (actiu == null || !actiu.getId().equals(jugador.getId()))
-            throw new IllegalStateException("It's not " + jugador.getNom() + "'s turn");
+            throw new IllegalStateException("No és el torn de " + jugador.getNom());
 
         if (partida.getEstat() == EstatPartida.EN_CURS) {
             if (!partida.isDausTirats())
-                throw new IllegalStateException("The dice must be rolled first");
+                throw new IllegalStateException("Primer s'han de tirar els daus");
             if (partida.isLladrePendent())
-                throw new IllegalStateException("The robber must be moved first");
+                throw new IllegalStateException("Primer s'ha de moure el lladre");
         }
     }
 
@@ -61,7 +61,7 @@ public final class GameRulesHelper {
             if (recurs.getTipus() == tipus)
                 return recurs;
         }
-        throw new IllegalStateException(jugador.getNom() + " has no " + tipus + " in their inventory");
+        throw new IllegalStateException(jugador.getNom() + " no té " + tipus + " a l'inventari");
     }
 
     public static boolean hasResources(Jugador jugador, Map<TipusRecurs, Integer> cost) {
@@ -78,7 +78,7 @@ public final class GameRulesHelper {
      */
     public static void pay(Jugador jugador, Map<TipusRecurs, Integer> cost) {
         if (!hasResources(jugador, cost))
-            throw new IllegalStateException(jugador.getNom() + " doesn't have enough resources");
+            throw new IllegalStateException(jugador.getNom() + " no té prou recursos");
         for (var entry : cost.entrySet())
             addResource(jugador, entry.getKey(), -entry.getValue());
     }

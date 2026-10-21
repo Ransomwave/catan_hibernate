@@ -40,7 +40,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
             session.beginTransaction();
 
             if (playerNames.size() < 2 || playerNames.size() > 4)
-                throw new IllegalArgumentException("There must be between 2 and 4 players");
+                throw new IllegalArgumentException("Hi ha d'haver entre 2 i 4 jugadors");
 
             // create partida
             var partida = new Partida(EstatPartida.PREPARACIO, 1, 10);
@@ -141,7 +141,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
     private List<String[]> readCsv(String fileName) {
         var stream = getClass().getResourceAsStream("/board/" + fileName);
         if (stream == null)
-            throw new IllegalStateException("File not found: /board/" + fileName);
+            throw new IllegalStateException("No s'ha trobat el fitxer: /board/" + fileName);
         try (var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             var rows = new ArrayList<String[]>();
             reader.readLine(); // skip the header
@@ -321,12 +321,12 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
 
             var partida = session.get(Partida.class, idPartida);
             if (partida == null)
-                throw new IllegalArgumentException("Partida not found with id: " + idPartida);
+                throw new IllegalArgumentException("No existeix la partida amb id: " + idPartida);
 
             if (partida.getEstat() != EstatPartida.EN_CURS)
-                throw new IllegalStateException("The dice can only be rolled while the game is in progress");
+                throw new IllegalStateException("Només es poden tirar els daus amb la partida en curs");
             if (partida.isDausTirats())
-                throw new IllegalStateException("The dice have already been rolled this turn");
+                throw new IllegalStateException("Els daus ja s'han tirat aquest torn");
 
             var die1 = random.nextInt(1, 7);
             var die2 = random.nextInt(1, 7);
@@ -335,12 +335,12 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
             partida.setUltimaTirada(roll);
             partida.setDausTirats(true);
 
-            var summary = new StringBuilder("Roll: " + die1 + " + " + die2 + " = " + roll + "\n");
+            var summary = new StringBuilder("Tirada: " + die1 + " + " + die2 + " = " + roll + "\n");
 
             if (roll == 7) {
                 // each player with more than 7 resources must discard half of them (rounded
                 // down)
-                summary.append("No production, the robber must be moved\n");
+                summary.append("No hi ha producció, s'ha de moure el lladre\n");
                 for (var jugador : partida.getJugadors()) {
                     var total = GameRulesHelper.totalResources(jugador);
                     if (total <= 7)
@@ -359,7 +359,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
                     for (var i = 0; i < toDiscard; i++)
                         GameRulesHelper.addResource(jugador, cards.get(i), -1);
 
-                    summary.append(jugador.getNom() + " discards " + toDiscard + " resources\n");
+                    summary.append(jugador.getNom() + " descarta " + toDiscard + " recursos\n");
                 }
                 partida.setLladrePendent(true);
             } else {
@@ -380,7 +380,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
                         .getResultList();
 
                 if (rows.isEmpty())
-                    summary.append("Nobody gets anything\n");
+                    summary.append("Ningú no rep res\n");
 
                 // for each settlement or city on a hexagon with the rolled number, give the
                 // owner the corresponding resource (1 for settlement, 2 for city)
@@ -392,7 +392,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
                     var amount = assentament instanceof Ciutat ? 2 : 1;
 
                     GameRulesHelper.addResource(jugador, terreny.getResource(), amount);
-                    summary.append(jugador.getNom() + " gets " + amount + " " + terreny.getResource() + "\n");
+                    summary.append(jugador.getNom() + " rep " + amount + " " + terreny.getResource() + "\n");
                 }
             }
 
@@ -412,7 +412,7 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
 
             var partida = session.get(Partida.class, idPartida);
             if (partida == null)
-                throw new IllegalArgumentException("Partida not found with id: " + idPartida);
+                throw new IllegalArgumentException("No existeix la partida amb id: " + idPartida);
 
             comprovarVictoria(session, partida);
 
