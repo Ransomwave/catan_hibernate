@@ -2,6 +2,7 @@ package org.example.dao.jugador;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.example.dao.GameRulesHelper;
 import org.example.dao.GenericDao;
@@ -22,6 +23,9 @@ import org.example.relationships.enums.TipusRecurs;
 import org.hibernate.Session;
 
 public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugadorDao {
+
+	private final Random random = new Random();
+
 	private <E> E buscarPerId(Session session, Class<E> classe, int id) {
 		return session.createQuery("FROM " + classe.getName() + " e WHERE e.id = :id", classe)
 				.setParameter("id", id)
@@ -248,12 +252,8 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				throw new IllegalArgumentException(
 						"No existeix el jugador.");
 			}
+			GameRulesHelper.checkAction(jugador, false);
 			Partida partida = jugador.getPartida();
-			if (partida.getActiu() == null
-					|| !partida.getActiu().getId().equals(idJugador)) {
-				throw new IllegalStateException(
-						"No és el torn d'aquest jugador.");
-			}
 			Vertex vertex = buscarPerId(session, Vertex.class, idVertex);
 			if (vertex == null) {
 				throw new IllegalArgumentException(
@@ -306,7 +306,9 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			ciutat.setVertex(vertex);
 			ciutat.setPropietari(jugador);
 			session.remove(poblat);
+			session.flush(); // remove it first or it won't work
 			session.persist(ciutat);
+			PartidaDao.comprovarVictoria(session, partida);
 			session.getTransaction().commit();
 
 		} catch (RuntimeException e) {
@@ -328,12 +330,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 				throw new IllegalArgumentException(
 						"El jugador no existeix.");
 			}
-			Partida partida = jugador.getPartida();
-			if (partida.getActiu() == null
-					|| !partida.getActiu().getId().equals(idJugador)) {
-				throw new IllegalStateException(
-						"No és el torn d'aquest jugador.");
-			}
+			GameRulesHelper.checkAction(jugador, false);
 			if (dona == null || rep == null || dona == rep) {
 				throw new IllegalArgumentException(
 						"Els tipus de recursos han de ser diferents.");
@@ -368,68 +365,69 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 		}
 	}
 
-@Override
-public int calcularPunts(int idJugador) {
-    Session session = sessionFactory.getCurrentSession();
+	@Override
+	public int calcularPunts(int idJugador) {
+		Session session = sessionFactory.getCurrentSession();
 
-    try {
-        session.beginTransaction();
+		try {
+			session.beginTransaction();
 
-        Jugador jugador = session.get(Jugador.class, idJugador);
+			Jugador jugador = session.get(Jugador.class, idJugador);
 
-        if (jugador == null) {
-            throw new RuntimeException("No existeix aquest jugador");
-        }
+			if (jugador == null) {
+				throw new RuntimeException("No existeix aquest jugador");
+			}
 
-        int punts = calcularPuntsEnSessio(session, jugador);
+			int punts = calcularPuntsEnSessio(session, jugador);
 
-        session.getTransaction().commit();
-        return punts;
+			session.getTransaction().commit();
+			return punts;
 
-    } catch (RuntimeException e) {
-        if (session.getTransaction().isActive()) {
-            session.getTransaction().rollback();
-        }
-        throw e;
-    }
-}
+		} catch (RuntimeException e) {
+			if (session.getTransaction().isActive()) {
+				session.getTransaction().rollback();
+			}
+			throw e;
+		}
+	}
 
-public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
-    Long poblats = session.createQuery(
-            "select count(p) from Poblat p " +
-            "where p.propietari.id = :id", Long.class)
-            .setParameter("id", jugador.getId())
-            .getSingleResult();
+	public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
+		Long poblats = session.createQuery(
+				"select count(p) from Poblat p " +
+						"where p.propietari.id = :id",
+				Long.class)
+				.setParameter("id", jugador.getId())
+				.getSingleResult();
 
-    Long ciutats = session.createQuery(
-            "select count(c) from Ciutat c " +
-            "where c.propietari.id = :id", Long.class)
-            .setParameter("id", jugador.getId())
-            .getSingleResult();
+		Long ciutats = session.createQuery(
+				"select count(c) from Ciutat c " +
+						"where c.propietari.id = :id",
+				Long.class)
+				.setParameter("id", jugador.getId())
+				.getSingleResult();
 
-    Long cartes = session.createQuery(
-            "select count(c) from CartaDesenvolupament c " +
-            "where c.propietari.id = :id and c.tipus = :tipus",
-            Long.class)
-            .setParameter("id", jugador.getId())
-            .setParameter("tipus", TipusCarta.PUNT_VICTORIA)
-            .getSingleResult();
+		Long cartes = session.createQuery(
+				"select count(c) from CartaDesenvolupament c " +
+						"where c.propietari.id = :id and c.tipus = :tipus",
+				Long.class)
+				.setParameter("id", jugador.getId())
+				.setParameter("tipus", TipusCarta.PUNT_VICTORIA)
+				.getSingleResult();
 
-    int punts = poblats.intValue()
-            + ciutats.intValue() * 2
-            + cartes.intValue();
+		int punts = poblats.intValue()
+				+ ciutats.intValue() * 2
+				+ cartes.intValue();
 
-    Jugador exercit = PartidaDao.exercitMesGranEnSessio(
-            session, jugador.getPartida().getId());
+		Jugador exercit = PartidaDao.exercitMesGranEnSessio(
+				session, jugador.getPartida().getId());
 
-    if (exercit != null
-            && exercit.getId().equals(jugador.getId())) {
-        punts += 2;
-    }
+		if (exercit != null
+				&& exercit.getId().equals(jugador.getId())) {
+			punts += 2;
+		}
 
-    return punts;
-}
-
+		return punts;
+	}
 
 	@Override
 	public void passarTorn(int idJugador) {
@@ -654,7 +652,7 @@ public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
 					}
 				}
 				if (!recursosDisponibles.isEmpty()) {
-					int index = new java.util.Random().nextInt(
+					int index = random.nextInt(
 							recursosDisponibles.size());
 
 					RecursJugador recursRobat = recursosDisponibles.get(index);
@@ -701,12 +699,15 @@ public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
 				throw new IllegalArgumentException(
 						"No existeix el jugador.");
 			}
+			GameRulesHelper.checkAction(jugador, false);
 			Partida partida = jugador.getPartida();
-			if (partida.getActiu() == null || !partida.getActiu().getId().equals(idJugador)) {
-				throw new IllegalStateException(
-						"No és el torn d'aquest jugador.");
+			var pila = new ArrayList<CartaDesenvolupament>();
+			for (var c : partida.getPila()) {
+				if (c.getPropietari() == null) {
+					pila.add(c);
+				}
 			}
-			if (partida.getPila().isEmpty()) {
+			if (pila.isEmpty()) {
 				throw new IllegalStateException(
 						"La pila de cartes de desenvolupament és buida.");
 			}
@@ -735,10 +736,11 @@ public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
 			llana.setQuantitat(llana.getQuantitat() - 1);
 			blat.setQuantitat(blat.getQuantitat() - 1);
 			mineral.setQuantitat(mineral.getQuantitat() - 1);
-			int index = new java.util.Random().nextInt(partida.getPila().size());
-			CartaDesenvolupament carta = partida.getPila().remove(index);
+			int index = random.nextInt(pila.size());
+			CartaDesenvolupament carta = pila.get(index);
 			carta.setPropietari(jugador);
 			carta.setRondaCompra(partida.getRonda());
+			PartidaDao.comprovarVictoria(session, partida);
 			session.getTransaction().commit();
 
 		} catch (RuntimeException e) {
@@ -760,12 +762,8 @@ public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
 				throw new IllegalArgumentException(
 						"No existeix el jugador.");
 			}
+			GameRulesHelper.checkAction(jugador, false);
 			Partida partida = jugador.getPartida();
-			if (partida.getActiu() == null
-					|| !partida.getActiu().getId().equals(idJugador)) {
-				throw new IllegalStateException(
-						"No és el torn d'aquest jugador.");
-			}
 			CartaDesenvolupament carta = buscarPerId(
 					session, CartaDesenvolupament.class, idCarta);
 			if (carta == null) {
@@ -798,6 +796,7 @@ public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
 				jugador.setCavallersJugats(
 						jugador.getCavallersJugats() + 1);
 				partida.setLladrePendent(true);
+				PartidaDao.comprovarVictoria(session, partida);
 			} else if (carta.getTipus() == TipusCarta.MONOPOLI) {
 				RecursJugador recursJugador = null;
 				for (RecursJugador r : jugador.getInventari()) {
