@@ -406,9 +406,20 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
 
     @Override
     public void comprovarVictoria(int idPartida) {
-        // TODO: ALL THIS SHOULD DO IS CALL comprovarVictoria(Session, Partida) AND WRAP
-        // IT IN A TRANSACTION!!!
-        throw new UnsupportedOperationException("Unimplemented method 'comprovarVictoria'");
+        var session = sessionFactory.getCurrentSession();
+        try {
+            session.beginTransaction();
+
+            var partida = session.get(Partida.class, idPartida);
+            if (partida == null)
+                throw new IllegalArgumentException("Partida not found with id: " + idPartida);
+
+            comprovarVictoria(session, partida);
+
+            session.getTransaction().commit();
+        } catch (RuntimeException e) {
+            handleException(session, e);
+        }
     }
 
     public static void comprovarVictoria(Session session, Partida partida) {
