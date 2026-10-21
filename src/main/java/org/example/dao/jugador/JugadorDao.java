@@ -86,8 +86,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			if (roadsOnAresta > 0)
 				throw new IllegalStateException("Ja hi ha una carretera en aquesta aresta");
 
-			var ownRoads = session.createQuery(
-					"select count(c) from Carretera c where c.propietari = :jugador", Long.class)
+			var ownRoads = session.createNamedQuery("Carretera.countByPropietari", Long.class)
 					.setParameter("jugador", jugador)
 					.getSingleResult();
 			if (ownRoads >= 15)
@@ -191,8 +190,7 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			if (buildingsNextTo > 0)
 				throw new IllegalStateException("Massa a prop d'una altra construcció");
 
-			var ownPoblats = session.createQuery(
-					"select count(p) from Poblat p where p.propietari = :jugador", Long.class)
+			var ownPoblats = session.createNamedQuery("Poblat.countByPropietari", Long.class)
 					.setParameter("jugador", jugador)
 					.getSingleResult();
 			if (ownPoblats >= 5)
@@ -348,11 +346,8 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 	}
 
 	public static int calcularPuntsEnSessio(Session session, Jugador jugador) {
-		Long poblats = session.createQuery(
-				"select count(p) from Poblat p " +
-						"where p.propietari.id = :id",
-				Long.class)
-				.setParameter("id", jugador.getId())
+		Long poblats = session.createNamedQuery("Poblat.countByPropietari", Long.class)
+				.setParameter("jugador", jugador)
 				.getSingleResult();
 
 		Long ciutats = session.createQuery(
@@ -460,16 +455,12 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 			ordreSeguent = ordreActual - 1;
 			if (ordreSeguent < 1) {
 				for (Jugador jugador : jugadors) {
-					Long poblats = session.createQuery(
-							"SELECT COUNT(p) FROM Poblat p WHERE p.propietari.id = :idJugador",
-							Long.class)
-							.setParameter("idJugador", jugador.getId())
-							.uniqueResult();
-					Long carreteres = session.createQuery(
-							"SELECT COUNT(c) FROM Carretera c WHERE c.propietari.id = :idJugador",
-							Long.class)
-							.setParameter("idJugador", jugador.getId())
-							.uniqueResult();
+					Long poblats = session.createNamedQuery("Poblat.countByPropietari", Long.class)
+							.setParameter("jugador", jugador)
+							.getSingleResult();
+					Long carreteres = session.createNamedQuery("Carretera.countByPropietari", Long.class)
+							.setParameter("jugador", jugador)
+							.getSingleResult();
 
 					if (poblats < 2 || carreteres < 2) {
 						throw new IllegalStateException(
@@ -502,16 +493,12 @@ public class JugadorDao extends GenericDao<Jugador, Integer> implements IJugador
 
 	private void comprovarPecesPreparacio(Session session, Jugador jugador, Partida partida) {
 		int ronda = partida.getRonda();
-		Long poblats = session.createQuery(
-				"SELECT COUNT(p) FROM Poblat p WHERE p.propietari.id = :idJugador",
-				Long.class)
-				.setParameter("idJugador", jugador.getId())
-				.uniqueResult();
-		Long carreteres = session.createQuery(
-				"SELECT COUNT(c) FROM Carretera c WHERE c.propietari.id = :idJugador",
-				Long.class)
-				.setParameter("idJugador", jugador.getId())
-				.uniqueResult();
+		Long poblats = session.createNamedQuery("Poblat.countByPropietari", Long.class)
+				.setParameter("jugador", jugador)
+				.getSingleResult();
+		Long carreteres = session.createNamedQuery("Carretera.countByPropietari", Long.class)
+				.setParameter("jugador", jugador)
+				.getSingleResult();
 		if (poblats < ronda || carreteres < ronda) {
 			if (ronda == 1) {
 				throw new IllegalStateException(

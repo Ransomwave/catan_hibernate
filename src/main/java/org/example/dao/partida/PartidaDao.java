@@ -263,10 +263,8 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
                 .getResultList();
 
         for (Jugador jugador : jugadors) {
-            Long poblats = session.createQuery(
-                    "select count(p) from Poblat p " +
-                    "where p.propietari.id = :id", Long.class)
-                    .setParameter("id", jugador.getId())
+            Long poblats = session.createNamedQuery("Poblat.countByPropietari", Long.class)
+                    .setParameter("jugador", jugador)
                     .getSingleResult();
 
             Long ciutats = session.createQuery(
@@ -275,10 +273,8 @@ public class PartidaDao extends GenericDao<Partida, Integer> implements IPartida
                     .setParameter("id", jugador.getId())
                     .getSingleResult();
 
-            Long carreteres = session.createQuery(
-                    "select count(c) from Carretera c " +
-                    "where c.propietari.id = :id", Long.class)
-                    .setParameter("id", jugador.getId())
+            Long carreteres = session.createNamedQuery("Carretera.countByPropietari", Long.class)
+                    .setParameter("jugador", jugador)
                     .getSingleResult();
 
             Long recursos = session.createQuery(
